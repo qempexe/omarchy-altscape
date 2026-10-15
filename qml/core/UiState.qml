@@ -19,6 +19,8 @@ Item {
     signal dockRequested()
     signal closeRequested()
     signal openSwitcherRequested()
+    signal tabRequested(string name, bool toggle)   // from ipc, one bar button answers
+    property var host: null                         // bar button used last
 
     readonly property var cfgSafe: cfg ? cfg : Schema.defaults
 

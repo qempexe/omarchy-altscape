@@ -127,6 +127,7 @@ BarWidget {
     }
     function toggle() {
         if (!svc) { lookup(); if (!svc) return }
+        if (ux) ux.host = root
         chooseMode()
         if (popped) {
             if (windowShown) hideWindow()
@@ -170,6 +171,14 @@ BarWidget {
         function onPopOutRequested() { if (root.panelOpened || root.windowShown) root.popOut() }
         function onDockRequested() { if (root.panelOpened || root.windowShown) root.dock() }
         function onCloseRequested() { root.close() }
+        // first button to hear it takes it, so several bars don't all open a panel
+        function onTabRequested(name, toggle) {
+            if (!root.ux.host) root.ux.host = root
+            if (root.ux.host !== root) return
+            var shown = root.panelOpened || root.windowShown
+            if (toggle && shown && root.ux.tabName === name) root.close()
+            else root.showTab(name)
+        }
     }
 
     // close the panel first, otherwise the overlay doesn't get the keyboard

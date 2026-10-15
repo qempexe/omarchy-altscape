@@ -187,10 +187,11 @@ Item {
         if (!m) return ""
         if (webIcons === null) buildWebIcons()
         var key = m[1].toLowerCase()
-        if (webIcons.full[key]) return webIcons.full[key]
+        var own = Object.prototype.hasOwnProperty
+        if (own.call(webIcons.full, key)) return webIcons.full[key]
         var h = key.split("__")[0].split("_")[0].replace(/^www\./, "")
         while (h.indexOf(".") > 0) {             // also try the parent domain
-            if (webIcons.host[h]) return webIcons.host[h]
+            if (own.call(webIcons.host, h)) return webIcons.host[h]
             h = h.substring(h.indexOf(".") + 1)
         }
         return ""
@@ -198,10 +199,13 @@ Item {
     // new web apps can get installed while the shell runs
     Timer { interval: 120000; repeat: true; running: true; onTriggered: { root.webIcons = null; root.iconCache = ({}) } }
 
+    // icon theme names only, no paths
+    function plainIconName(s) { return /^[A-Za-z0-9][A-Za-z0-9._+-]{0,127}$/.test(s) }
+
     function iconFor(cls) {
         var name = String(cls || "")
-        if (name === "") return ""
-        if (iconCache[name] !== undefined) return iconCache[name]
+        if (name === "" || name.length > 256) return ""
+        if (Object.prototype.hasOwnProperty.call(iconCache, name)) return iconCache[name]
         var web = ""
         try { web = webIconFor(name) } catch (ew) { web = "" }
         if (web !== "") {
@@ -212,7 +216,7 @@ Item {
             return web
         }
         var lower = name.toLowerCase()
-        var cands = [name, lower, lower.replace(/ /g, "-"), lower.split(".").pop()]
+        var cands = [name, lower, lower.replace(/ /g, "-"), lower.split(".").pop()].filter(plainIconName)
         var p = ""
         try {
             for (var i = 0; i < cands.length && p === ""; i++) {
@@ -313,6 +317,10 @@ Item {
         function open(): string { return root.openSwitcher("open") ? "ok" : "unavailable" }
         function next(): string { return root.openSwitcher("next") ? "ok" : "unavailable" }
         function prev(): string { return root.openSwitcher("prev") ? "ok" : "unavailable" }
+
+        // panel on a tab, again to close (super + alt + shift + s runs settings)
+        function settings(): string { root.ui.tabRequested("settings", true); return "ok" }
+        function panel(): string { root.ui.tabRequested("visualisers", true); return "ok" }
 
         function mode(name: string): string {
             if (Schema.modeKeys.indexOf(name) < 0) return "unknown mode; use one of " + Schema.modeKeys.join(", ")

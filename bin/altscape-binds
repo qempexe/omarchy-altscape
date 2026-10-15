@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# writes / removes the alt+tab bind in the hyprland config
+# writes / removes the alt+tab binds (and super+alt+shift+s for the settings) in the hyprland config
 #
 #   altscape-binds sync alt|super|off
 #   altscape-binds remove
@@ -99,6 +99,8 @@ lua_block() { # shortcut
     echo "  -- Letting go of the modifier picks the selected window."
     echo "  o.bind(\"$mod + ${mod}_L\", \"Altscape: switch on release\", \"$SUMMON release\", { release = true })"
     echo "  o.bind(\"$mod + ${mod}_R\", \"Altscape: switch on release\", \"$SUMMON release\", { release = true })"
+    echo "  -- Opens the settings (again to close)."
+    echo "  o.bind(\"SUPER + ALT + SHIFT + S\", \"Altscape settings\", \"omarchy-shell $PLUGIN_ID settings\")"
     echo "end"
     echo "end"
   fi
@@ -116,6 +118,7 @@ conf_block() { # shortcut
     echo "bind = $mod SHIFT, TAB, exec, $SUMMON prev"
     echo "bindr = $mod, ${mod}_L, exec, $SUMMON release"
     echo "bindr = $mod, ${mod}_R, exec, $SUMMON release"
+    echo "bind = SUPER ALT SHIFT, S, exec, omarchy-shell $PLUGIN_ID settings"
   fi
   echo "$END_CONF"
 }

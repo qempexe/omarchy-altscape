@@ -66,7 +66,8 @@ While it's open:
 | Esc | cancel |
 
 The bar button: left click opens the panel, right click opens it straight on
-Settings, middle click opens the switcher.
+Settings, middle click opens the switcher. **Super+Alt+Shift+S** opens the
+settings from anywhere (press it again to close them).
 
 ## The panel
 
@@ -136,11 +137,14 @@ whatever is bound last wins. Your file is backed up once as
 when something actually changed. If the panel header says *Alt + Tab ready*,
 it's working.
 
+The same block also adds **Super+Alt+Shift+S** for the settings.
+
 If you'd rather manage keybinds yourself, set the shortcut to **Off** and bind
-this wherever you want:
+these wherever you want:
 
 ```bash
-omarchy-shell shell summon io.github.qempexe.altscape next
+omarchy-shell shell summon io.github.qempexe.altscape next   # the switcher
+omarchy-shell io.github.qempexe.altscape settings            # the settings
 ```
 
 (Classic `hyprland.conf` setups get the same block in `bindings.conf`.)
@@ -169,6 +173,7 @@ For poking at it from a terminal:
 ```bash
 omarchy-shell io.github.qempexe.altscape status
 omarchy-shell io.github.qempexe.altscape mode ring
+omarchy-shell io.github.qempexe.altscape settings   # or panel, both toggle
 ```
 
 ## Updating
