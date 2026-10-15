@@ -1,0 +1,253 @@
+#!/usr/bin/env bash
+# writes / removes the alt+tab bind in the hyprland config
+#
+#   altscape-binds sync alt|super|off
+#   altscape-binds remove
+#   altscape-binds status
+#
+# lua: one marked block at the end of hyprland.lua (bindings.lua if there's none)
+# conf: marked block in bindings.conf
+# prints one json line. only reloads hyprland when something changed
+set -uo pipefail
+umask 077
+
+PLUGIN_ID="io.github.qempexe.altscape"
+PLUGIN_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+HYPR_DIR="$HOME/.config/hypr"
+# end of hyprland.lua on purpose: whatever binds last wins,
+# so a plugin loaded earlier can't steal alt+tab back
+MAIN_LUA="$HYPR_DIR/hyprland.lua"
+OLD_LUA="$HYPR_DIR/bindings.lua"
+if [[ -f "$MAIN_LUA" ]]; then LUA_FILE="$MAIN_LUA"; else LUA_FILE="$OLD_LUA"; fi
+CONF_FILE="$HYPR_DIR/bindings.conf"
+STATE_DIR="$HOME/.local/state/omarchy-altscape"
+BINDS_LUA="$STATE_DIR/hypr-binds.lua"
+BEGIN_LUA="-- >>> altscape >>>"
+END_LUA="-- <<< altscape <<<"
+BEGIN_CONF="# >>> altscape >>>"
+END_CONF="# <<< altscape <<<"
+# blocks from the old name, removed on every sync
+OLD_NAME="switch""board"
+SUMMON="omarchy-shell shell summon $PLUGIN_ID"
+
+json_str() { printf '%s' "$1" | tr -d '\000-\037' | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+
+# path -> lua string. escape \ and ", refuse control chars (then no binds)
+lua_str() {
+  local s="$1"
+  [[ "$s" == *[$'\001'-$'\037']* ]] && return 1
+  s="${s//\\/\\\\}"; s="${s//\"/\\\"}"
+  printf '"%s"' "$s"
+}
+
+ACTIVE="unknown"   # set by verify_live: true | false | unknown (no hyprctl)
+
+report() { # ok format file shortcut changed error
+  printf '{"ok":%s,"format":"%s","file":"%s","shortcut":"%s","changed":%s,"active":"%s","error":"%s"}\n' \
+    "$1" "$2" "$(json_str "$3")" "$4" "$5" "$ACTIVE" "$(json_str "$6")"
+}
+
+format() {
+  if [[ -f "$OLD_LUA" || -f "$MAIN_LUA" ]]; then echo lua
+  elif [[ -f "$CONF_FILE" || -f "$HYPR_DIR/hyprland.conf" ]]; then echo conf
+  else echo none; fi
+}
+
+# write only if different. cat > keeps symlinked dotfiles as symlinks. prints 1 if written
+write_if_changed() {
+  local file="$1" content="$2"
+  if [[ -f "$file" ]] && [[ "$(cat "$file")" == "$content" ]]; then echo 0; return; fi
+  mkdir -p "$(dirname "$file")"
+  printf '%s\n' "$content" > "$file" && echo 1
+}
+
+# file without our block (also drops the blank lines before it at the end)
+strip_block() {
+  local file="$1" begin="$2" end="$3"
+  [[ -f "$file" ]] || return 0
+  awk -v b="$begin" -v e="$end" '
+    $0 == b { skip = 1; next }
+    skip && $0 == e { skip = 0; next }
+    !skip { print }
+  ' "$file"
+}
+
+backup_once() {
+  local file="$1"
+  [[ -f "$file" && ! -e "$file.bak-altscape" ]] && cp -p "$file" "$file.bak-altscape"
+}
+
+keys_for() { # shortcut -> "MOD"
+  case "$1" in alt) echo "ALT" ;; super) echo "SUPER" ;; *) echo "" ;; esac
+}
+
+# the lua block, skipped once the plugin folder is gone
+lua_block() { # shortcut
+  local mod; mod="$(keys_for "$1")"
+  echo "$BEGIN_LUA"
+  echo "-- Window switcher keybind, managed by Altscape (change it in its settings)."
+  if [[ -n "$mod" ]]; then
+    local manifest; manifest="$(lua_str "$PLUGIN_DIR/manifest.json")" || { echo "$END_LUA"; return; }
+    echo "do"
+    echo "local altscape_manifest = io.open($manifest, \"r\")"
+    echo "if altscape_manifest then"
+    echo "  altscape_manifest:close()"
+    echo "  hl.unbind(\"$mod + TAB\")"
+    echo "  hl.unbind(\"$mod + SHIFT + TAB\")"
+    echo "  o.bind(\"$mod + TAB\", \"Altscape: next window\", \"$SUMMON next\")"
+    echo "  o.bind(\"$mod + SHIFT + TAB\", \"Altscape: previous window\", \"$SUMMON prev\")"
+    echo "  -- Letting go of the modifier picks the selected window."
+    echo "  o.bind(\"$mod + ${mod}_L\", \"Altscape: switch on release\", \"$SUMMON release\", { release = true })"
+    echo "  o.bind(\"$mod + ${mod}_R\", \"Altscape: switch on release\", \"$SUMMON release\", { release = true })"
+    echo "end"
+    echo "end"
+  fi
+  echo "$END_LUA"
+}
+
+conf_block() { # shortcut
+  local mod; mod="$(keys_for "$1")"
+  echo "$BEGIN_CONF"
+  echo "# Window switcher keybind, managed by Altscape (change it in its settings)."
+  if [[ -n "$mod" ]]; then
+    echo "unbind = $mod, TAB"
+    echo "unbind = $mod SHIFT, TAB"
+    echo "bind = $mod, TAB, exec, $SUMMON next"
+    echo "bind = $mod SHIFT, TAB, exec, $SUMMON prev"
+    echo "bindr = $mod, ${mod}_L, exec, $SUMMON release"
+    echo "bindr = $mod, ${mod}_R, exec, $SUMMON release"
+  fi
+  echo "$END_CONF"
+}
+
+DIAG="$STATE_DIR/binds-check.txt"
+
+reload_hypr() { command -v hyprctl >/dev/null 2>&1 && hyprctl reload >/dev/null 2>&1; return 0; }
+
+# is the bind actually live? look for a TAB bind with our modifier running our command
+bind_live() { # shortcut
+  local mask
+  case "$1" in alt) mask=8 ;; super) mask=64 ;; *) return 0 ;; esac
+  hyprctl -j binds 2>/dev/null | python3 -c '
+import json, sys
+mask, plugin = int(sys.argv[1]), sys.argv[2]
+try: binds = json.load(sys.stdin)
+except Exception: sys.exit(1)
+ok = any(str(b.get("key", "")).lower() == "tab" and int(b.get("modmask", -1)) == mask
+         and (plugin in str(b.get("arg", "")) or "Altscape" in str(b.get("description", "")))
+         for b in binds)
+sys.exit(0 if ok else 1)' "$mask" "$PLUGIN_ID"
+}
+
+# after writing: check, reload once if needed, check again.
+# what we saw goes to binds-check.txt
+verify_live() { # shortcut
+  { command -v hyprctl && command -v python3; } >/dev/null 2>&1 || { ACTIVE="unknown"; return; }
+  [[ "$1" == off ]] && { ACTIVE="true"; return; }
+  if bind_live "$1"; then ACTIVE="true"; return; fi
+  reload_hypr
+  sleep 0.6
+  if bind_live "$1"; then ACTIVE="true"; else ACTIVE="false"; fi
+  mkdir -p "$STATE_DIR"
+  {
+    echo "checked: $(date)"
+    echo "shortcut: $1  active after reload: $ACTIVE"
+    echo "--- hyprctl configerrors"; hyprctl configerrors 2>&1 | head -40
+    echo "--- TAB binds"
+    hyprctl -j binds 2>/dev/null | python3 -c '
+import json, sys
+for b in json.load(sys.stdin):
+    if str(b.get("key", "")).lower() == "tab":
+        print(b.get("modmask"), b.get("key"), b.get("dispatcher"), b.get("arg"), b.get("description", ""))' 2>&1
+  } > "$DIAG" 2>&1
+}
+
+drop_legacy() { # file begin end -> prints 1 when it changed the file
+  local f="$1" b="$2" e="$3"
+  if [[ -f "$f" ]] && grep -qxF -e "$b" "$f"; then
+    printf '%s\n' "$(strip_block "$f" "$b" "$e")" > "$f"; echo 1
+  fi
+}
+
+cmd_sync() {
+  local shortcut="${1:-alt}"
+  case "$shortcut" in alt|super|off) ;; *) report false "" "" "$shortcut" false "unknown shortcut"; return 1 ;; esac
+  local fmt changed=0 w; fmt="$(format)"
+  local lf
+  for lf in "$MAIN_LUA" "$OLD_LUA"; do
+    [[ "$(drop_legacy "$lf" "-- >>> $OLD_NAME >>>" "-- <<< $OLD_NAME <<<")" == 1 ]] && changed=1
+  done
+  [[ "$(drop_legacy "$CONF_FILE" "# >>> $OLD_NAME >>>" "# <<< $OLD_NAME <<<")" == 1 ]] && changed=1
+  rm -f "$HOME/.local/state/omarchy-$OLD_NAME/hypr-binds.lua" 2>/dev/null
+  case "$fmt" in
+    lua)
+      [[ -f "$LUA_FILE" ]] && ! grep -qxF -e "$BEGIN_LUA" "$LUA_FILE" && backup_once "$LUA_FILE"
+      local body; body="$(strip_block "$LUA_FILE" "$BEGIN_LUA" "$END_LUA")"
+      if [[ -n "$body" ]]; then body="$body"$'\n\n'; fi
+      w="$(write_if_changed "$LUA_FILE" "$body$(lua_block "$shortcut")")"; [[ "$w" == 1 ]] && changed=1
+      # older versions kept the binds elsewhere
+      [[ -f "$BINDS_LUA" ]] && rm -f "$BINDS_LUA"
+      if [[ "$LUA_FILE" != "$OLD_LUA" && -f "$OLD_LUA" ]] && grep -qxF -e "$BEGIN_LUA" "$OLD_LUA"; then
+        printf '%s\n' "$(strip_block "$OLD_LUA" "$BEGIN_LUA" "$END_LUA")" > "$OLD_LUA"; changed=1
+      fi
+      [[ "$changed" == 1 ]] && reload_hypr
+      verify_live "$shortcut"
+      report true lua "$LUA_FILE" "$shortcut" "$([[ $changed == 1 ]] && echo true || echo false)" ""
+      ;;
+    conf)
+      local body; body="$(strip_block "$CONF_FILE" "$BEGIN_CONF" "$END_CONF")"
+      if [[ -n "$body" ]]; then body="$body"$'\n\n'; fi
+      [[ -f "$CONF_FILE" ]] && ! grep -qxF -e "$BEGIN_CONF" "$CONF_FILE" && backup_once "$CONF_FILE"
+      w="$(write_if_changed "$CONF_FILE" "$body$(conf_block "$shortcut")")"; [[ "$w" == 1 ]] && changed=1
+      [[ "$changed" == 1 ]] && reload_hypr
+      verify_live "$shortcut"
+      report true conf "$CONF_FILE" "$shortcut" "$([[ $changed == 1 ]] && echo true || echo false)" ""
+      ;;
+    *)
+      report false none "" "$shortcut" false "no Hyprland config found in ~/.config/hypr"
+      ;;
+  esac
+}
+
+cmd_remove() {
+  local changed=0 body
+  local f
+  for f in "$MAIN_LUA" "$OLD_LUA"; do
+    if [[ -f "$f" ]] && grep -qxF -e "$BEGIN_LUA" "$f"; then
+      body="$(strip_block "$f" "$BEGIN_LUA" "$END_LUA")"
+      printf '%s\n' "$body" > "$f"; changed=1
+    fi
+  done
+  if [[ -f "$CONF_FILE" ]] && grep -qxF -e "$BEGIN_CONF" "$CONF_FILE"; then
+    body="$(strip_block "$CONF_FILE" "$BEGIN_CONF" "$END_CONF")"
+    printf '%s\n' "$body" > "$CONF_FILE"; changed=1
+  fi
+  [[ -f "$BINDS_LUA" ]] && rm -f "$BINDS_LUA" && changed=1
+  [[ "$changed" == 1 ]] && reload_hypr
+  report true "$(format)" "" "off" "$([[ $changed == 1 ]] && echo true || echo false)" ""
+}
+
+cmd_status() {
+  local fmt installed=false shortcut="off"; fmt="$(format)"
+  if [[ "$fmt" == lua ]]; then
+    grep -qxF -e "$BEGIN_LUA" "$LUA_FILE" 2>/dev/null && installed=true
+    grep -q 'o.bind("ALT + TAB", "Altscape' "$LUA_FILE" 2>/dev/null && shortcut=alt
+    grep -q 'o.bind("SUPER + TAB", "Altscape' "$LUA_FILE" 2>/dev/null && shortcut=super
+    verify_live "$shortcut"
+    report "$installed" lua "$LUA_FILE" "$shortcut" false ""
+  elif [[ "$fmt" == conf ]]; then
+    grep -qxF -e "$BEGIN_CONF" "$CONF_FILE" 2>/dev/null && installed=true
+    grep -q '^bind = ALT, TAB' "$CONF_FILE" 2>/dev/null && shortcut=alt
+    grep -q '^bind = SUPER, TAB' "$CONF_FILE" 2>/dev/null && shortcut=super
+    report "$installed" conf "$CONF_FILE" "$shortcut" false ""
+  else
+    report false none "" off false "no Hyprland config found in ~/.config/hypr"
+  fi
+}
+
+case "${1:-status}" in
+  sync) cmd_sync "${2:-alt}" ;;
+  remove) cmd_remove ;;
+  status) cmd_status ;;
+  *) echo "usage: altscape-binds sync alt|super|off | remove | status" >&2; exit 2 ;;
+esac
