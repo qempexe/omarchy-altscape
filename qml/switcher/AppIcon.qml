@@ -1,4 +1,5 @@
 import QtQuick
+import "../controls"
 
 // app icon, or the first letter in a circle if there's none
 Item {

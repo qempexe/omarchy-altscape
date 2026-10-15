@@ -1,5 +1,5 @@
 import QtQuick
-import "Schema.js" as Schema
+import "../js/Schema.js" as Schema
 
 // theme + spacing + panel state for panel, popout and overlay (`ui.*`).
 // own item so the names can't clash with the shell's types

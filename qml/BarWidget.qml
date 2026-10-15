@@ -193,7 +193,7 @@ BarWidget {
     Loader {
         id: panelLoader
         active: true
-        source: Qt.resolvedUrl("Panel.qml")
+        source: Qt.resolvedUrl("panel/Panel.qml")
         onLoaded: {
             root.injectPanel()
             Qt.callLater(root.injectPanel)
@@ -205,7 +205,7 @@ BarWidget {
     Loader {
         id: windowLoader
         active: root.windowRequested
-        source: Qt.resolvedUrl("PopoutWindow.qml")
+        source: Qt.resolvedUrl("panel/PopoutWindow.qml")
         onLoaded: {
             item.svc = root.svc
             item.visible = root.windowRequested

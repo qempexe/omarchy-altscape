@@ -1,6 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
-import "Schema.js" as Schema
+import "../js/Schema.js" as Schema
+import "../controls"
+import "../core"
+import "../switcher"
 
 // visualisers tab: a tile per layout + live preview with your windows (click to switch)
 Item {

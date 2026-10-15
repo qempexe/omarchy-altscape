@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "../controls"
 
 // the whole panel: header, two tabs, content, footer.
 // used by both the docked popup and the popped out window

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import "Effects.js" as Fx
+import "../js/Effects.js" as Fx
+import "../controls"
 
 // one setting row: label + hint, value + reset arrow, control below.
 // enum controls: tiles | seg | chips | scheme | effect (seg/chips picked by count if empty)

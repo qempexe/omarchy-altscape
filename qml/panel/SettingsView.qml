@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import "Schema.js" as Schema
+import "../js/Schema.js" as Schema
+import "../controls"
 
 // settings tab: one tab per group in Schema.js, rows underneath
 Item {

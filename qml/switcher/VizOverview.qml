@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Wayland
-import "Model.js" as Model
+import "../js/Model.js" as Model
 
 // overview: every workspace as a mini screen, windows where they really are
 Item {

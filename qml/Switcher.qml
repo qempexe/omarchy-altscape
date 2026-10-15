@@ -3,7 +3,9 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import qs.Commons
-import "Effects.js" as Fx
+import "js/Effects.js" as Fx
+import "core"
+import "switcher"
 
 // the alt+tab overlay, full screen on the focused monitor.
 //

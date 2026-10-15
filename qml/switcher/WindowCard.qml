@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell.Wayland
-import "Effects.js" as Fx
+import "../js/Effects.js" as Fx
+import "../controls"
 
 // one window: live (or still) preview at its real shape, thin edge, icon in the
 // corner. that's it, no card around it. used by every layout

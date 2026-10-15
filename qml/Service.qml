@@ -3,8 +3,9 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import qs.Commons
-import "Schema.js" as Schema
-import "Model.js" as Model
+import "js/Schema.js" as Schema
+import "js/Model.js" as Model
+import "core"
 
 // the always-loaded part. owns settings, keeps the window list fresh from
 // hyprland events (so alt+tab opens instantly), icons, focus/close,
@@ -264,7 +265,7 @@ Item {
     }
 
     // keybind
-    readonly property string bindHelper: String(Qt.resolvedUrl("bin/altscape-binds")).replace(/^file:\/\//, "")
+    readonly property string bindHelper: String(Qt.resolvedUrl("../bin/altscape-binds")).replace(/^file:\/\//, "")
     property var bindStatus: ({ format: "", file: "", shortcut: "", ok: false, error: "" })
     property string bindApplied: ""
 

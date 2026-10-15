@@ -1,5 +1,5 @@
 import QtQuick
-import "Model.js" as Model
+import "../js/Model.js" as Model
 
 // what a layout draws + how the selection moves.
 // overlay and panel preview each have one. layouts read items/groups/selected

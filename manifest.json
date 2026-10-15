@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.qempexe.altscape",
   "name": "Altscape",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "qempexe",
   "license": "MIT",
   "description": "Window switcher for Alt+Tab with eight ways to see your windows: grid, strip, carousel, ring, list, workspace overview, stack and dock. Live previews, grouped by workspace, all workspaces or just the current one, and a bar panel to pick the style and tune every setting.",
@@ -13,9 +13,9 @@
   ],
   "keepLoaded": true,
   "entryPoints": {
-    "service": "Service.qml",
-    "overlay": "Switcher.qml",
-    "barWidget": "BarWidget.qml"
+    "service": "qml/Service.qml",
+    "overlay": "qml/Switcher.qml",
+    "barWidget": "qml/BarWidget.qml"
   },
   "barWidget": {
     "displayName": "Altscape",

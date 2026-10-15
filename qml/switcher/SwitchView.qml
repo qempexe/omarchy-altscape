@@ -1,4 +1,5 @@
 import QtQuick
+import "../controls"
 
 // picks the layout component
 Item {
