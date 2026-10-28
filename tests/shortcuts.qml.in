@@ -50,6 +50,14 @@ ShellRoot {
             root.focused = ""
         }
         function open(): void { switcher.open("open") }
+        function effects(): void {
+            root.config = Schema.resolve({mode: "strip", order: "recent", previews: "off",
+                                           effect: "zoom", closeEffect: "fade", speed: 140})
+        }
+        function visualState(): string {
+            return JSON.stringify({opened: switcher.opened, closing: switcher.closing,
+                                   shown: switcher.shown, progress: switcher.t})
+        }
         function quit(): void { Qt.quit() }
     }
 }

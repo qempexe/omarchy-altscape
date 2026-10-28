@@ -43,6 +43,20 @@ class Shortcuts(unittest.TestCase):
             cls.addClassCleanup(subprocess.run,
                                 ["hyprctl", "eval", f'hl.unbind("{key}")'],
                                 capture_output=True, check=True)
+        # Exercise real modifier/Tab key-up ordering as well as action events.
+        cls.real_modifier = not any(
+            not b.get("submap") and ((b.get("modmask") in (4, 5) and b.get("key", "").upper() == "TAB")
+            or b.get("key", "").upper() == "CONTROL_L") for b in binds)
+        if cls.real_modifier:
+            for key, action in (("CTRL + TAB", "next"), ("CTRL + SHIFT + TAB", "prev"),
+                                ("CTRL + CONTROL_L", "release")):
+                options = "release = true, transparent = true, ignore_mods = true, non_consuming = true" if action == "release" else ""
+                subprocess.run(["hyprctl", "eval",
+                                f'hl.bind("{key}", hl.dsp.global("{cls.appid}:{action}"), {{{options}}})'],
+                               capture_output=True, check=True)
+                cls.addClassCleanup(subprocess.run,
+                                    ["hyprctl", "eval", f'hl.unbind("{key}")'],
+                                    capture_output=True, check=True)
         cls.log = (directory / "shell.log").open("w+")
         cls.process = subprocess.Popen(["qs", "-p", str(cls.config), "--no-color"],
                                        stdout=cls.log, stderr=subprocess.STDOUT)
@@ -85,6 +99,15 @@ class Shortcuts(unittest.TestCase):
     def state(self):
         return json.loads(self.ipc("state").stdout)
 
+    def assert_hidden(self):
+        deadline = time.monotonic() + 2
+        while time.monotonic() < deadline:
+            visual = json.loads(self.ipc("visualState").stdout)
+            if not visual["shown"]:
+                return
+            time.sleep(.02)
+        self.fail(f"Switcher is still visible: {visual}")
+
     def send(self, *actions):
         # Real key press/release events, without artificial delays. Dispatching
         # hl.dsp.global through hyprctl alone only sends a press, not a release.
@@ -103,6 +126,29 @@ class Shortcuts(unittest.TestCase):
     def test_fast_tap(self):
         self.send("next", "release")
         self.assertEqual(self.state(), dict(opened=False, selected=1, count=1, focused="0xb"))
+
+    def test_animated_fast_tap(self):
+        self.ipc("effects")
+        self.send("next", "release")
+        self.assert_hidden()
+        self.assertEqual(self.state()["count"], 1)
+
+    def test_modifier_and_tab_release_orders(self):
+        if not self.real_modifier:
+            self.skipTest("Ctrl+Tab and Ctrl release bindings must be unused")
+        for modifier_first in (False, True):
+            for delay in (1, 10):
+                with self.subTest(modifier_first=modifier_first, delay=delay):
+                    self.ipc("reset", "true")
+                    self.ipc("effects")
+                    keys = ["-M", "ctrl", "-P", "Control_L", "-P", "Tab", "-s", str(delay)]
+                    if modifier_first:
+                        keys += ["-p", "Control_L", "-m", "ctrl", "-p", "Tab"]
+                    else:
+                        keys += ["-p", "Tab", "-p", "Control_L", "-m", "ctrl"]
+                    self.send_keys(*keys)
+                    self.assert_hidden()
+                    self.assertEqual(self.state()["count"], 1)
 
     def test_hold_and_cycle(self):
         self.send("next")
