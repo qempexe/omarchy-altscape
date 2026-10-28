@@ -61,12 +61,13 @@ Item {
         selected = items.length === 0 ? 0 : marks[where] !== undefined ? marks[where] : 0
     }
 
-    // new data while open: stay on the same window (or the alt+tab target if
-    // nothing moved yet)
+    // Keep the highlighted window while open, even before the first explicit
+    // selection. Focus-history updates must not replace the opening target.
     function refreshKeeping(where) {
-        if (userMoved) { rebuild(); return }
+        var keep = selectedItem ? selectedItem.key : ""
         rebuild()
-        selected = items.length === 0 ? 0 : marks[where]
+        if (!userMoved && Model.indexOfKey(items, keep) < 0)
+            selected = items.length === 0 ? 0 : marks[where]
     }
 
     function select(i) {

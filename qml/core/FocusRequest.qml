@@ -3,6 +3,8 @@ import QtQuick
 // The layer's keyboard-interactivity commit and the Hyprland IPC focus request
 // travel over different connections. Retry a rejected request until focus is
 // acknowledged, rather than depending on which connection is handled first.
+// A queued overlay teardown can then restore the old floating window. Keep
+// the request pending until its acknowledgement stays stable for 100 ms.
 Item {
     id: root
     visible: false
@@ -14,32 +16,43 @@ Item {
 
     function cancel() {
         retry.stop()
+        settled.stop()
         target = ""
         remaining = 0
     }
 
     function request(address) {
         cancel()
-        if (address === activeAddress) return
         target = address
         remaining = 30
         retry.start()
-        requested(address)
+        if (address === activeAddress) settled.start()
+        else requested(address)
     }
 
-    onActiveAddressChanged: if (target !== "" && activeAddress === target) cancel()
+    onActiveAddressChanged: {
+        if (target === "") return
+        if (activeAddress === target) settled.restart()
+        else settled.stop()
+    }
+
+    Timer {
+        id: settled
+        interval: 100
+        onTriggered: if (root.target !== "" && root.activeAddress === root.target) root.cancel()
+    }
 
     Timer {
         id: retry
         interval: 16
         repeat: true
         onTriggered: {
-            if (root.target === "" || root.activeAddress === root.target || root.remaining <= 0) {
+            if (root.target === "" || root.remaining <= 0) {
                 root.cancel()
                 return
             }
             root.remaining--
-            root.requested(root.target)
+            if (root.activeAddress !== root.target) root.requested(root.target)
         }
     }
 }
