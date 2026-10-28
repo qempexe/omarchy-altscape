@@ -95,6 +95,7 @@ Item {
             else if (what === "open" || what === "current") root.holdMode = false
             return
         }
+        if (root.svc && typeof root.svc.cancelFocus === "function") root.svc.cancelFocus()
         root.holdMode = what === "next" || what === "prev"
         exit.stop()
         root.closing = false

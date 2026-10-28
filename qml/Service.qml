@@ -249,9 +249,19 @@ Item {
 
     function focusWindow(address) {
         if (!validAddress(address)) return false
-        if (hyprFormat === "conf") Hyprland.dispatch("focuswindow address:" + address)
-        else Hyprland.dispatch('hl.dsp.focus({ window = "address:' + address + '" })')
+        focusRequest.request("0x" + Model.norm(address))
         return true
+    }
+
+    function cancelFocus() { focusRequest.cancel() }
+
+    FocusRequest {
+        id: focusRequest
+        activeAddress: Hyprland.activeToplevel ? "0x" + Model.norm(Hyprland.activeToplevel.address) : ""
+        onRequested: function(address) {
+            if (root.hyprFormat === "conf") Hyprland.dispatch("focuswindow address:" + address)
+            else Hyprland.dispatch('hl.dsp.focus({ window = "address:' + address + '" })')
+        }
     }
 
     function closeWindow(address) {
