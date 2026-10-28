@@ -139,6 +139,10 @@ it's working.
 
 The same block also adds **Super+Alt+Shift+S** for the settings.
 
+The managed Alt/Super+Tab bindings use Hyprland global shortcuts, so a fast
+tap and modifier release reach the switcher in order. Existing IPC commands
+remain available for scripts.
+
 If you'd rather manage keybinds yourself, set the shortcut to **Off** and bind
 these wherever you want:
 
@@ -158,8 +162,6 @@ omarchy-shell io.github.qempexe.altscape settings            # the settings
   machine, set previews to *Snapshot* or *Icons only* and the effects to *Fade*.
 - The blur is a snapshot of the screen when the switcher opens, so a video
   playing behind it won't move.
-- If you tap Alt+Tab really fast, the switcher can sometimes stay open. Press
-  Enter or Alt again.
 - No search. You pick by moving, not by typing.
 
 ## Where things are

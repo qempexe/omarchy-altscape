@@ -28,7 +28,6 @@ BEGIN_CONF="# >>> altscape >>>"
 END_CONF="# <<< altscape <<<"
 # blocks from the old name, removed on every sync
 OLD_NAME="switch""board"
-SUMMON="omarchy-shell shell summon $PLUGIN_ID"
 
 json_str() { printf '%s' "$1" | tr -d '\000-\037' | sed 's/\\/\\\\/g; s/"/\\"/g'; }
 
@@ -94,11 +93,12 @@ lua_block() { # shortcut
     echo "  altscape_manifest:close()"
     echo "  hl.unbind(\"$mod + TAB\")"
     echo "  hl.unbind(\"$mod + SHIFT + TAB\")"
-    echo "  o.bind(\"$mod + TAB\", \"Altscape: next window\", \"$SUMMON next\")"
-    echo "  o.bind(\"$mod + SHIFT + TAB\", \"Altscape: previous window\", \"$SUMMON prev\")"
+    echo "  o.bind(\"$mod + TAB\", \"Altscape: next window\", hl.dsp.global(\"$PLUGIN_ID:next\"))"
+    echo "  o.bind(\"$mod + SHIFT + TAB\", \"Altscape: previous window\", hl.dsp.global(\"$PLUGIN_ID:prev\"))"
     echo "  -- Letting go of the modifier picks the selected window."
-    echo "  o.bind(\"$mod + ${mod}_L\", \"Altscape: switch on release\", \"$SUMMON release\", { release = true })"
-    echo "  o.bind(\"$mod + ${mod}_R\", \"Altscape: switch on release\", \"$SUMMON release\", { release = true })"
+    echo "  -- Keep release active after Tab/Shift and let apps receive the modifier."
+    echo "  o.bind(\"$mod + ${mod}_L\", \"Altscape: switch on release\", hl.dsp.global(\"$PLUGIN_ID:release\"), { release = true, transparent = true, ignore_mods = true, non_consuming = true })"
+    echo "  o.bind(\"$mod + ${mod}_R\", \"Altscape: switch on release\", hl.dsp.global(\"$PLUGIN_ID:release\"), { release = true, transparent = true, ignore_mods = true, non_consuming = true })"
     echo "  -- Opens the settings (again to close)."
     echo "  o.bind(\"SUPER + ALT + SHIFT + S\", \"Altscape settings\", \"omarchy-shell $PLUGIN_ID settings\")"
     echo "end"
@@ -114,10 +114,10 @@ conf_block() { # shortcut
   if [[ -n "$mod" ]]; then
     echo "unbind = $mod, TAB"
     echo "unbind = $mod SHIFT, TAB"
-    echo "bind = $mod, TAB, exec, $SUMMON next"
-    echo "bind = $mod SHIFT, TAB, exec, $SUMMON prev"
-    echo "bindr = $mod, ${mod}_L, exec, $SUMMON release"
-    echo "bindr = $mod, ${mod}_R, exec, $SUMMON release"
+    echo "bind = $mod, TAB, global, $PLUGIN_ID:next"
+    echo "bind = $mod SHIFT, TAB, global, $PLUGIN_ID:prev"
+    echo "bindrint = $mod, ${mod}_L, global, $PLUGIN_ID:release"
+    echo "bindrint = $mod, ${mod}_R, global, $PLUGIN_ID:release"
     echo "bind = SUPER ALT SHIFT, S, exec, omarchy-shell $PLUGIN_ID settings"
   fi
   echo "$END_CONF"

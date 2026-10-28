@@ -1,0 +1,55 @@
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import "@REPO@/qml"
+import "@REPO@/qml/core"
+import "@REPO@/qml/js/Schema.js" as Schema
+
+ShellRoot {
+    id: root
+    property var config: Schema.resolve({mode: "strip", order: "recent", previews: "off",
+                                         effect: "none", closeEffect: "none", speed: 0})
+    property int focusCount: 0
+    property string focused: ""
+
+    UiState { id: theme; cfg: root.config }
+    QtObject {
+        id: service
+        property var cfg: root.config
+        property var ui: theme
+        property var info: ({windows: [
+            {key: "a", address: "0xa", title: "A", cls: "A", focusId: 0},
+            {key: "b", address: "0xb", title: "B", cls: "B", focusId: 1},
+            {key: "c", address: "0xc", title: "C", cls: "C", focusId: 2}
+        ]})
+        signal windowsUpdated()
+        function refresh() {}
+        function focusWindow(address) { root.focusCount++; root.focused = address }
+    }
+    QtObject {
+        id: shell
+        function hide(id) { switcher.close() }
+    }
+    Switcher { id: switcher; service: service; shell: shell }
+    SwitcherShortcuts {
+        appid: "@APPID@"
+        onTriggered: function(action) { switcher.open(action) }
+    }
+    IpcHandler {
+        target: "test"
+        function state(): string {
+            return JSON.stringify({opened: switcher.opened, selected: switcher.switchState.selected,
+                                   count: root.focusCount, focused: root.focused})
+        }
+        function reset(pickOnRelease: bool): void {
+            switcher.close()
+            root.config = Schema.resolve({mode: "strip", order: "recent", previews: "off",
+                                           effect: "none", closeEffect: "none", speed: 0,
+                                           pickOnRelease: pickOnRelease})
+            root.focusCount = 0
+            root.focused = ""
+        }
+        function open(): void { switcher.open("open") }
+        function quit(): void { Qt.quit() }
+    }
+}
