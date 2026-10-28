@@ -268,6 +268,10 @@ Item {
         return false
     }
 
+    SwitcherShortcuts {
+        onTriggered: function(action) { root.openSwitcher(action) }
+    }
+
     // keybind
     readonly property string bindHelper: String(Qt.resolvedUrl("../bin/altscape-binds")).replace(/^file:\/\//, "")
     property var bindStatus: ({ format: "", file: "", shortcut: "", ok: false, error: "" })
