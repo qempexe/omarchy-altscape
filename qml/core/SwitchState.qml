@@ -18,6 +18,8 @@ Item {
     property bool hoverSelects: true
     // selection came from the mouse: don't scroll lists for it
     property bool pointed: false
+    property bool pointerKnown: false
+    property point pointerPosition: Qt.point(0, 0)
 
     readonly property var ui: svc ? svc.ui : null
     readonly property var cfg: svc ? svc.cfg : ({ mode: "grid", scope: "all", order: "workspace", showSpecial: false,
@@ -54,6 +56,7 @@ Item {
         startWhere = where
         userMoved = false
         pointed = false
+        pointerKnown = false
         rebuild()
         selected = items.length === 0 ? 0 : marks[where] !== undefined ? marks[where] : 0
     }
@@ -73,9 +76,15 @@ Item {
         userMoved = true
     }
 
-    // hover
-    function point(i) {
-        if (items.length === 0 || !hoverSelects) return
+    // Qt also sends positionChanged when previews appear or move beneath a
+    // stationary cursor. The first event only records its global position;
+    // later events select only if the cursor itself moved, across all cards.
+    function point(i, position) {
+        var moved = pointerKnown && (Math.abs(position.x - pointerPosition.x) > 0.5
+                                     || Math.abs(position.y - pointerPosition.y) > 0.5)
+        if (!pointerKnown || moved) pointerPosition = position
+        pointerKnown = true
+        if (!moved || items.length === 0 || !hoverSelects) return
         pointed = true
         selected = Math.max(0, Math.min(items.length - 1, i))
         userMoved = true
