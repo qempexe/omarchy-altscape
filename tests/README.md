@@ -1,4 +1,4 @@
-Run the pointer-selection and focus-request regression tests with Qt 6's
+Run the pointer-selection, selection-refresh and focus-request regression tests with Qt 6's
 `qmltestrunner`:
 
 ```sh
@@ -10,7 +10,11 @@ On Arch Linux, the executable is `/usr/lib/qt6/bin/qmltestrunner`.
 The tests use the real switch state and Qt mouse events, including moving a
 preview beneath a stationary pointer. Focus tests check retries until the target
 is acknowledged, replacement and cancellation of pending requests, and bounded
-retries for unavailable windows. No running Hyprland session is required.
+retries for unavailable windows. They also check recovery when overlay teardown
+restores the old floating window just after a transient focus acknowledgement.
+Selection-refresh tests keep the highlighted window through focus-history
+changes while the switcher is open, including before any explicit navigation.
+No running Hyprland session is required.
 
 Check managed binding upgrades for Alt and Super, in Lua and classic configs:
 
@@ -42,6 +46,8 @@ nested QML components, leaving the previous code running.
 
 Also verify actual focus with at least two application windows: tap the configured
 shortcut with 1–10 ms holds and check `hyprctl -j activewindow` after each tap.
+Also hold the modifier for 150–350 ms before releasing it to catch focus-history
+updates changing the initial selection while the switcher is still open.
 Test releasing Tab first and releasing the modifier first, with closing effects
 enabled. The live shortcut fixture records the selected address without focusing
 an application, so it cannot detect a focus request rejected while the overlay
