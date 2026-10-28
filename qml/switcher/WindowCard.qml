@@ -213,8 +213,8 @@ Item {
     }
 
     // only the window reacts, not the empty space around it.
-    // hover selects only on real movement, so a mouse that happens to sit
-    // where the switcher opens doesn't steal the selection
+    // SwitchState compares global positions so appearing or moving beneath a
+    // stationary cursor doesn't steal the keyboard selection.
     MouseArea {
         id: hover
         x: frame.x; y: frame.y
@@ -222,7 +222,9 @@ Item {
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         cursorShape: Qt.PointingHandCursor
-        onPositionChanged: if (card.sw && card.sw.selected !== card.itemIndex) card.sw.point(card.itemIndex)
+        onPositionChanged: function(mouse) {
+            if (card.sw) card.sw.point(card.itemIndex, mapToGlobal(mouse.x, mouse.y))
+        }
         onClicked: function(mouse) {
             if (!card.sw) return
             if (mouse.button === Qt.MiddleButton) card.sw.closeAt(card.itemIndex)

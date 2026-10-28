@@ -127,7 +127,9 @@ Item {
                                 hoverEnabled: true
                                 acceptedButtons: Qt.LeftButton | Qt.MiddleButton
                                 cursorShape: Qt.PointingHandCursor
-                                onPositionChanged: if (!win.on) view.sw.point(win.itemIndex)
+                                onPositionChanged: function(mouse) {
+                                    view.sw.point(win.itemIndex, mapToGlobal(mouse.x, mouse.y))
+                                }
                                 onClicked: function(mouse) {
                                     if (mouse.button === Qt.MiddleButton) view.sw.closeAt(win.itemIndex)
                                     else view.sw.activate(win.itemIndex)
