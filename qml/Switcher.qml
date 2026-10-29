@@ -76,12 +76,19 @@ Item {
         return "open"
     }
 
+    // switch to the selected window. With nothing to pick (no windows, or none
+    // in the chosen scope) the switcher closes instead of staying up empty.
+    function pick() {
+        if (sws.items.length === 0) root.dismiss()
+        else sws.activate()
+    }
+
     // alt let go (from the release bind). only counts if the shortcut opened us
     function release() {
         if (!root.opened) return
         if (root.holdMode && root.cfg && root.cfg.pickOnRelease === true) {
             root.holdMode = false
-            sws.activate()
+            root.pick()
         }
     }
 
@@ -272,7 +279,7 @@ Item {
                 else if (e.key === Qt.Key_Up) sws.stepRow(-1)
                 else if (e.key === Qt.Key_Home) sws.select(0)
                 else if (e.key === Qt.Key_End) sws.select(sws.items.length - 1)
-                else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter || e.key === Qt.Key_Space) sws.activate()
+                else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter || e.key === Qt.Key_Space) root.pick()
                 else if (e.key === Qt.Key_Escape) root.dismiss()
                 else if (e.key === Qt.Key_Delete) sws.closeAt()
                 else if (e.key === Qt.Key_BracketRight) { if (root.svc) root.svc.stepMode(1) }
@@ -286,7 +293,7 @@ Item {
                 if (e.key === Qt.Key_Alt || e.key === Qt.Key_AltGr || e.key === Qt.Key_Meta
                         || e.key === Qt.Key_Super_L || e.key === Qt.Key_Super_R) {
                     root.holdMode = false
-                    sws.activate()
+                    root.pick()
                     e.accepted = true
                 }
             }
