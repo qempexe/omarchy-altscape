@@ -16,7 +16,28 @@ Item {
     visible: false
 
     property var shell: null
-    property var manifest: null
+    property var manifest: null      // handed in by the shell; read from manifest.json when it isn't
+
+    FileView {
+        id: manifestFile
+        path: decodeURIComponent(Qt.resolvedUrl("../manifest.json").toString().replace(/^file:\/\//, ""))
+        onLoaded: {
+            if (root.manifest) return
+            let m = null
+            try { m = JSON.parse(text()) } catch (e) { m = null }
+            const v = m && typeof m.version === "string" && /^[0-9A-Za-z.+-]{1,32}$/.test(m.version) ? m.version : ""
+            root.manifest = { version: v }
+        }
+    }
+
+    // opening a link (the About tab's): only plain https addresses, through xdg-open
+    function openUrl(url) {
+        const u = String(url || "")
+        if (!/^https:\/\/[A-Za-z0-9.-]+(\/[A-Za-z0-9._~%!$&'()*+,;=:@\/?#-]*)?$/.test(u) || u.length > 300) return
+        opener.command = ["xdg-open", u]
+        opener.running = true
+    }
+    Process { id: opener }
 
     readonly property string pluginId: "io.github.qempexe.altscape"
 
