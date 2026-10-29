@@ -57,10 +57,11 @@ Item {
     readonly property color surface: custom ? hexOr(cfgSafe.customBg, "#141414")
         : mono ? grey(lumOf(barSurface)) : barSurface
     readonly property bool lightSurface: lumOf(surface) > 0.5
-    // text must be readable on the surface, else fall back to black/white
+    // custom: your text color as it is. theme: the bar's, unless it can't be read
+    // on the surface, then black or white
     readonly property color wantFg: custom ? hexOr(cfgSafe.customFg, "#e0e0e0") : barFg
     readonly property color fg: mono ? contrast(surface)
-        : (Math.abs(lumOf(wantFg) - lumOf(surface)) >= 0.35 ? wantFg : contrast(surface))
+        : custom || Math.abs(lumOf(wantFg) - lumOf(surface)) >= 0.35 ? wantFg : contrast(surface)
     readonly property bool hasThemeAccent: themeAccent.a > 0
     readonly property color themeAc: hasThemeAccent ? Qt.rgba(themeAccent.r, themeAccent.g, themeAccent.b, 1) : barFg
     readonly property color accent: custom ? hexOr(cfgSafe.accentColor, "#ff6a1f")
@@ -83,7 +84,11 @@ Item {
         return { bg: barSurface, fg: barFg, ac: themeAc }
     }
 
-    readonly property color accentText: contrast(accent)
+    // text on the accent: custom picks whichever of your background and text color
+    // reads better on it, so only your own colors show
+    readonly property color accentText: custom
+        ? (Math.abs(lumOf(surface) - lumOf(accent)) >= Math.abs(lumOf(fg) - lumOf(accent)) ? surface : fg)
+        : contrast(accent)
     readonly property color urgent: mono ? fg : Qt.rgba(themeUrgent.r, themeUrgent.g, themeUrgent.b, 1)
     readonly property color bad: mono ? fg
         : (lightSurface ? Qt.rgba(0.74, 0.16, 0.26, 1) : Qt.rgba(0.97, 0.46, 0.56, 1))
@@ -97,7 +102,7 @@ Item {
         return Qt.rgba(surface.r * 0.78 + c.r * 0.22, surface.g * 0.78 + c.g * 0.22,
                        surface.b * 0.78 + c.b * 0.22, 1)
     }
-    function onText(c) { return contrast(onFill(c)) }
+    function onText(c) { return custom ? fg : contrast(onFill(c)) }
     // panel bg with opacity
     readonly property color panelColor: Qt.rgba(surface.r, surface.g, surface.b, opacityF)
 
