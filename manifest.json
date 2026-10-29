@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "io.github.qempexe.altscape",
   "name": "Altscape",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "qempexe",
   "license": "MIT",
-  "description": "Window switcher for Alt+Tab with eight ways to see your windows: grid, strip, carousel, ring, list, workspace overview, stack and dock. Live previews, grouped by workspace, all workspaces or just the current one, and a bar panel to pick the style and tune every setting.",
+  "description": "Window switcher for Alt+Tab with twelve ways to see your windows: grid, strip, carousel, ring, list, workspace overview, stack, dock, compact, spread, columns and fan. Live previews, grouped by workspace, all workspaces or just the current one, and a bar panel to pick the style and tune every setting.",
   "kinds": [
     "service",
     "overlay",
@@ -20,7 +20,7 @@
   "barWidget": {
     "displayName": "Altscape",
     "category": "Productivity",
-    "description": "Alt+Tab window switcher with eight visual styles",
+    "description": "Alt+Tab window switcher with twelve visual styles",
     "aliases": [
       "alt-tab",
       "switcher",
