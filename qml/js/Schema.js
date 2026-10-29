@@ -23,7 +23,8 @@ var modes = [
   { key: "dock",     label: "Dock",      hint: "Small previews along the bottom, growing around the selection." },
   { key: "compact",  label: "Compact",   hint: "Every window the same size, close together in one panel, the title underneath. Like Windows and macOS." },
   { key: "spread",   label: "Spread",    hint: "Every window at its own shape, as big as fits, in rows that fill the screen." },
-  { key: "columns",  label: "Columns",   hint: "A column per workspace, its windows stacked under its name." }
+  { key: "columns",  label: "Columns",   hint: "A column per workspace, its windows stacked under its name." },
+  { key: "fan",      label: "Fan",       hint: "The windows spread like a hand of cards, the selected one pulled up." }
 ];
 
 var modeKeys = modes.map(m => m.key);

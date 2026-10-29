@@ -163,4 +163,23 @@ Item {
             }
         }
     }
+    // fan: a hand of cards
+    Item {
+        visible: root.mode === "fan"
+        anchors.fill: parent
+        Repeater {
+            model: 5
+            Rectangle {
+                readonly property real a: (index - 2) * 20
+                readonly property real r: (index - 2) * 20 * Math.PI / 180
+                readonly property real out: index === 2 ? 30 : 26
+                width: 14; height: 18; radius: 2
+                x: root.width / 2 + Math.sin(r) * out - width / 2
+                y: root.height + 12 - Math.cos(r) * out - height / 2
+                rotation: index === 2 ? 0 : a
+                z: index === 2 ? 5 : index
+                color: index === 2 ? root.ink : root.soft
+            }
+        }
+    }
 }
