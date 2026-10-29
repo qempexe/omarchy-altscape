@@ -119,20 +119,24 @@ Item {
     // don't wait forever for the screenshot
     Timer { id: captureWait; interval: 300; onTriggered: root.startEnter() }
 
+    // `closing` is set before `opened` is cleared: for a moment in between, `shown`
+    // would be false, the layer surface would be destroyed and made again just
+    // to play the closing effect, and the old frame would flash back on screen.
     function close() {
         if (!root.opened) return
-        root.opened = false
         root.holdMode = false
         enter.stop()
         captureWait.stop()
         var e = root.cfg ? root.cfg.closeEffect : "none"
         if (e === "none" || !root.cfg || root.cfg.speed <= 0 || !root.captured) {
             root.closing = false
+            root.opened = false
             root.t = 1
             return
         }
         root.fxName = e
         root.closing = true
+        root.opened = false
         exit.restart()
     }
 
