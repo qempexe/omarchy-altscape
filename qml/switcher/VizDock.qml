@@ -18,7 +18,7 @@ Item {
         return out
     }
 
-    readonly property real gap: Math.max(4, Math.round(ui.px(10) * k))
+    readonly property real gap: Math.round(ui.px(sw.cfg.tileGap * 0.85) * k)
     readonly property real grow: 1.7
     // base size, shrunk until the row (incl. the magnified ones) fits
     readonly property real cellW: {
@@ -75,6 +75,7 @@ Item {
                             width: Math.round(view.cellW * f)
                             height: Math.round(view.cellH * f) + titleH
                             showTitle: view.sw.cfg.showTitles && isSelected
+                            uniform: view.sw.cfg.equalSizes
                             iconSize: Math.min(view.sw.cfg.iconSize * view.k, height * 0.4)
                             Behavior on width { enabled: view.ui.animations; NumberAnimation { duration: view.sw.cfg.speed * 0.8; easing.type: Easing.OutCubic } }
                             Behavior on height { enabled: view.ui.animations; NumberAnimation { duration: view.sw.cfg.speed * 0.8; easing.type: Easing.OutCubic } }

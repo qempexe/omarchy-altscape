@@ -8,7 +8,7 @@ Flickable {
     property real k: 1
     readonly property var ui: sw.ui
 
-    readonly property real gap: Math.max(6, Math.round(ui.px(12) * k))
+    readonly property real gap: Math.round(ui.px(sw.cfg.tileGap) * k)
     readonly property real cardW: Math.max(90, Math.round(sw.cfg.tileSize * k))
     readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(11) * 1.9) : 0
     readonly property real cardH: Math.round(cardW * 0.62) + titleH
@@ -73,6 +73,7 @@ Flickable {
                             width: view.cardW
                             height: view.cardH
                             showTitle: view.sw.cfg.showTitles
+                            uniform: view.sw.cfg.equalSizes
                             showBadge: view.sw.showBadges
                             iconSize: view.sw.cfg.iconSize * view.k
                             onRevealRequested: function(t) { view.reveal(t) }

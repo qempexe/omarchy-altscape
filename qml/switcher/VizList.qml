@@ -8,7 +8,7 @@ Item {
     property real k: 1
     readonly property var ui: sw.ui
 
-    readonly property real gap: Math.max(4, Math.round(ui.px(10) * k))
+    readonly property real gap: Math.round(ui.px(sw.cfg.tileGap * 0.85) * k)
     readonly property real colW: Math.max(90, Math.min(Math.round(sw.cfg.tileSize * 0.9 * k), width * 0.26))
     readonly property real thumbH: Math.round(colW / 1.6)
 
@@ -73,6 +73,7 @@ Item {
                             width: section.width
                             height: view.thumbH
                             showTitle: false
+                            uniform: view.sw.cfg.equalSizes
                             iconSize: Math.min(view.sw.cfg.iconSize * view.k, view.thumbH * 0.45)
                             onRevealRequested: function(t) { flick.reveal(t) }
                         }

@@ -20,7 +20,8 @@ var modes = [
   { key: "list",     label: "List",      hint: "A column of small previews, the selection big beside it." },
   { key: "overview", label: "Overview",  hint: "Every workspace as a little screen, windows where they really are." },
   { key: "stack",    label: "Stack",     hint: "A deck of windows; the next ones wait behind the selection." },
-  { key: "dock",     label: "Dock",      hint: "Small previews along the bottom, growing around the selection." }
+  { key: "dock",     label: "Dock",      hint: "Small previews along the bottom, growing around the selection." },
+  { key: "compact",  label: "Compact",   hint: "Every window the same size, close together in one panel, the title underneath. Like Windows and macOS." }
 ];
 
 var modeKeys = modes.map(function(m) { return m.key; });
@@ -59,6 +60,10 @@ var groups = [
         hint: "Live keeps every preview moving while the switcher is open. Snapshot grabs one frame. Icons only is the lightest." },
       { key: "tileSize", label: "Preview size", kind: "int", fallback: 300, min: 120, max: 520, step: 10,
         hint: "How wide a window preview is, in pixels." },
+      { key: "tileGap", label: "Space between windows", kind: "int", fallback: 12, min: 0, max: 48, step: 2,
+        hint: "Pixels between the previews. 0 packs them edge to edge." },
+      { key: "equalSizes", label: "Same size for every window", kind: "bool", fallback: false,
+        hint: "Give every preview the same shape, with the window inside it, instead of each at its own shape. Compact always does." },
       { key: "iconSize", label: "Icon size", kind: "int", fallback: 40, min: 16, max: 96, step: 4,
         hint: "App icons on the previews (and instead of them when a preview is not ready)." },
       { key: "showTitles", label: "Window titles", kind: "bool", fallback: false,

@@ -15,6 +15,9 @@ Item {
     property bool showPreview: true
     property bool showBadge: false        // kept for callers; nothing is drawn for it
     property real iconSize: 32
+    // every card the same shape: the frame fills the card, and the window sits
+    // in it at its own shape (the compact layout, and Same size for every window)
+    property bool uniform: false
     readonly property var ui: sw ? sw.ui : null
     readonly property bool isSelected: sw !== null && sw.selected === itemIndex
     readonly property bool wantsAttention: item !== null && item.urgent === true && sw && sw.cfg.attention !== "off"
@@ -95,18 +98,21 @@ Item {
 
         readonly property real boxW: card.width
         readonly property real boxH: Math.max(1, card.height - card.titleH)
-        width: Math.round(Math.min(boxW, boxH * card.ar))
-        height: Math.round(Math.min(boxH, boxW / card.ar))
+        width: card.uniform ? Math.round(boxW) : Math.round(Math.min(boxW, boxH * card.ar))
+        height: card.uniform ? Math.round(boxH) : Math.round(Math.min(boxH, boxW / card.ar))
         anchors.horizontalCenter: parent.horizontalCenter
         y: Math.round((boxH - height) / 2)
 
         radius: ui.r(1)
-        color: shot.hasShot ? "transparent" : Qt.rgba(ui.surface.r, ui.surface.g, ui.surface.b, 0.92)
+        color: shot.hasShot && !card.uniform ? "transparent" : Qt.rgba(ui.surface.r, ui.surface.g, ui.surface.b, 0.92)
         clip: true
 
         Item {
             id: shot
-            anchors.fill: parent
+            // the window at its own shape, inside the frame
+            width: card.uniform ? Math.round(Math.min(parent.width, parent.height * card.ar)) : parent.width
+            height: card.uniform ? Math.round(Math.min(parent.height, parent.width / card.ar)) : parent.height
+            anchors.centerIn: parent
 
             readonly property bool wantShot: card.showPreview && card.sw.cfg.previews !== "off"
                                              && card.item !== null && card.item.toplevel !== null

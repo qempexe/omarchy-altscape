@@ -112,4 +112,17 @@ Item {
             }
         }
     }
+    // compact: equal windows close together in one panel
+    Rectangle {
+        visible: root.mode === "compact"
+        anchors.centerIn: parent
+        width: 60; height: 26; radius: 4
+        color: "transparent"
+        border.width: 1; border.color: root.soft
+        Row {
+            anchors.centerIn: parent
+            spacing: 2
+            Repeater { model: 4; Rectangle { width: 12; height: 14; radius: 1.5; color: index === 1 ? root.ink : root.soft } }
+        }
+    }
 }
