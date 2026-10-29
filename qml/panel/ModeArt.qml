@@ -125,4 +125,23 @@ Item {
             Repeater { model: 4; Rectangle { width: 12; height: 14; radius: 1.5; color: index === 1 ? root.ink : root.soft } }
         }
     }
+    // spread: windows of their own shapes filling rows
+    Column {
+        visible: root.mode === "spread"
+        anchors.centerIn: parent
+        spacing: 3
+        Row {
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 3
+            Rectangle { width: 20; height: 13; radius: 2; color: root.soft }
+            Rectangle { width: 10; height: 13; radius: 2; color: root.ink }
+            Rectangle { width: 24; height: 13; radius: 2; color: root.soft }
+        }
+        Row {
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 3
+            Rectangle { width: 26; height: 13; radius: 2; color: root.soft }
+            Rectangle { width: 18; height: 13; radius: 2; color: root.soft }
+        }
+    }
 }

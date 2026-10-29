@@ -21,7 +21,8 @@ var modes = [
   { key: "overview", label: "Overview",  hint: "Every workspace as a little screen, windows where they really are." },
   { key: "stack",    label: "Stack",     hint: "A deck of windows; the next ones wait behind the selection." },
   { key: "dock",     label: "Dock",      hint: "Small previews along the bottom, growing around the selection." },
-  { key: "compact",  label: "Compact",   hint: "Every window the same size, close together in one panel, the title underneath. Like Windows and macOS." }
+  { key: "compact",  label: "Compact",   hint: "Every window the same size, close together in one panel, the title underneath. Like Windows and macOS." },
+  { key: "spread",   label: "Spread",    hint: "Every window at its own shape, as big as fits, in rows that fill the screen." }
 ];
 
 var modeKeys = modes.map(m => m.key);

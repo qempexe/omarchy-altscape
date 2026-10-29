@@ -191,3 +191,52 @@ function bestGrid(n, ar, w, h, gap, head) {
   }
   return best;
 }
+
+// spread: rows of windows at their own shape, as big as fits in w x h.
+// ars = width / height of each window. returns the row height and, per window,
+// x, y, w, h, with every row centered and the whole block centered.
+function spread(ars, w, h, gap, maxH) {
+  const n = ars.length;
+  if (n <= 0 || w <= 0 || h <= 0) return { rowH: 0, boxes: [] };
+  const rowsFor = rh => {
+    const rows = [];
+    let row = [], used = 0;
+    for (let i = 0; i < n; i++) {
+      const bw = rh * ars[i];
+      if (row.length > 0 && used + gap + bw > w) { rows.push(row); row = []; used = 0; }
+      used += (row.length > 0 ? gap : 0) + bw;
+      row.push(i);
+    }
+    if (row.length > 0) rows.push(row);
+    return rows;
+  };
+  const fits = rh => {
+    const rows = rowsFor(rh);
+    if (rows.length * rh + (rows.length - 1) * gap > h) return false;
+    for (const r of rows) if (r.length === 1 && rh * ars[r[0]] > w) return false;
+    return true;
+  };
+  let lo = 4, hi = Math.min(h, maxH > 0 ? maxH : h);
+  if (!fits(lo)) lo = 1;
+  for (let k = 0; k < 30; k++) {
+    const mid = (lo + hi) / 2;
+    if (fits(mid)) lo = mid; else hi = mid;
+  }
+  const rh = Math.floor(lo);
+  const rows = rowsFor(rh);
+  const boxes = new Array(n);
+  const total = rows.length * rh + (rows.length - 1) * gap;
+  let y = (h - total) / 2;
+  for (const r of rows) {
+    let rw = (r.length - 1) * gap;
+    for (const i of r) rw += Math.min(w, rh * ars[i]);
+    let x = (w - rw) / 2;
+    for (const i of r) {
+      const bw = Math.min(w, rh * ars[i]);
+      boxes[i] = { x: Math.round(x), y: Math.round(y), w: Math.round(bw), h: rh };
+      x += bw + gap;
+    }
+    y += rh + gap;
+  }
+  return { rowH: rh, boxes: boxes };
+}

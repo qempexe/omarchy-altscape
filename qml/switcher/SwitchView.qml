@@ -22,6 +22,7 @@ Item {
             case "stack": return stack
             case "dock": return dock
             case "compact": return compact
+            case "spread": return spread
             default: return grid
             }
         }
@@ -36,6 +37,7 @@ Item {
     Component { id: stack; VizStack { sw: root.sw; k: root.k } }
     Component { id: dock; VizDock { sw: root.sw; k: root.k } }
     Component { id: compact; VizCompact { sw: root.sw; k: root.k } }
+    Component { id: spread; VizSpread { sw: root.sw; k: root.k } }
 
     Txt {
         ui: root.sw ? root.sw.ui : null
