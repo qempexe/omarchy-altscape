@@ -12,6 +12,9 @@ preview beneath a stationary pointer. Focus tests check retries until the target
 is acknowledged, replacement and cancellation of pending requests, and bounded
 retries for unavailable windows. They also check recovery when overlay teardown
 restores the old floating window just after a transient focus acknowledgement.
+Acknowledgement also raises the selected window, including a window that already
+has keyboard focus but is behind other floating windows. Cancelled, replaced and
+unavailable targets must not trigger a raise.
 Selection-refresh tests keep the highlighted window through focus-history
 changes while the switcher is open, including before any explicit navigation.
 No running Hyprland session is required.
@@ -46,6 +49,9 @@ nested QML components, leaving the previous code running.
 
 Also verify actual focus with at least two application windows: tap the configured
 shortcut with 1–10 ms holds and check `hyprctl -j activewindow` after each tap.
+For floating windows, also check that the selected address is at the top of its
+workspace's stack in `hyprctl -j clients`, including an already-focused window
+covered by another float. Keyboard focus alone does not confirm a raise.
 Also hold the modifier for 150–350 ms before releasing it to catch focus-history
 updates changing the initial selection while the switcher is still open.
 Test releasing Tab first and releasing the modifier first, with closing effects

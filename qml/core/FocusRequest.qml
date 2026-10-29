@@ -13,6 +13,7 @@ Item {
     property string target: ""
     property int remaining: 0
     signal requested(string address)
+    signal acknowledged(string address)
 
     function cancel() {
         retry.stop()
@@ -26,14 +27,18 @@ Item {
         target = address
         remaining = 30
         retry.start()
-        if (address === activeAddress) settled.start()
-        else requested(address)
+        if (address === activeAddress) {
+            acknowledged(address)
+            settled.start()
+        } else requested(address)
     }
 
     onActiveAddressChanged: {
         if (target === "") return
-        if (activeAddress === target) settled.restart()
-        else settled.stop()
+        if (activeAddress === target) {
+            acknowledged(target)
+            settled.restart()
+        } else settled.stop()
     }
 
     Timer {

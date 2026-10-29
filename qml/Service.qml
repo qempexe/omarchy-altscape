@@ -262,6 +262,12 @@ Item {
             if (root.hyprFormat === "conf") Hyprland.dispatch("focuswindow address:" + address)
             else Hyprland.dispatch('hl.dsp.focus({ window = "address:' + address + '" })')
         }
+        onAcknowledged: function(address) {
+            // Focusing a floating window does not raise it. Wait until focus
+            // succeeds, including retries while the overlay releases the keyboard.
+            if (root.hyprFormat === "conf") Hyprland.dispatch("alterzorder top,address:" + address)
+            else Hyprland.dispatch('hl.dsp.window.alter_zorder({ mode = "top", window = "address:' + address + '" })')
+        }
     }
 
     function closeWindow(address) {
