@@ -47,11 +47,13 @@ class Bindings(unittest.TestCase):
                 for side in ("L", "R"):
                     self.assertIn(f'{modifier} + {modifier}_{side}', generated)
                 self.assertEqual(generated.count("release = true, transparent = true, ignore_mods = true, non_consuming = true"), 2)
+                self.assertIn('hl.layer_rule({ match = { namespace = "^altscape$" }, no_anim = true, animation = "none" })', generated)
             else:
                 self.assertIn(f'bind = {modifier}, TAB, global, {PLUGIN}:next', generated)
                 self.assertIn(f'bind = {modifier} SHIFT, TAB, global, {PLUGIN}:prev', generated)
                 for side in ("L", "R"):
                     self.assertIn(f'bindrint = {modifier}, {modifier}_{side}, global, {PLUGIN}:release', generated)
+                self.assertIn("layerrule = noanim, ^altscape$", generated)
             self.assertFalse(run("sync", shortcut)["changed"])
             self.assertEqual(run("status")["shortcut"], shortcut)
             run("sync", "off")

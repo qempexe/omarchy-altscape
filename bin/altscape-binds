@@ -101,6 +101,9 @@ lua_block() { # shortcut
     echo "  o.bind(\"$mod + ${mod}_R\", \"Altscape: switch on release\", hl.dsp.global(\"$PLUGIN_ID:release\"), { release = true, transparent = true, ignore_mods = true, non_consuming = true })"
     echo "  -- Opens the settings (again to close)."
     echo "  o.bind(\"SUPER + ALT + SHIFT + S\", \"Altscape settings\", \"omarchy-shell $PLUGIN_ID settings\")"
+    echo "  -- The switcher plays its own opening and closing effects: no compositor"
+    echo "  -- animation on top of them, which would flash an old frame when it closes."
+    echo "  hl.layer_rule({ match = { namespace = \"^altscape\$\" }, no_anim = true, animation = \"none\" })"
     echo "end"
     echo "end"
   fi
@@ -119,6 +122,7 @@ conf_block() { # shortcut
     echo "bindrint = $mod, ${mod}_L, global, $PLUGIN_ID:release"
     echo "bindrint = $mod, ${mod}_R, global, $PLUGIN_ID:release"
     echo "bind = SUPER ALT SHIFT, S, exec, omarchy-shell $PLUGIN_ID settings"
+    echo "layerrule = noanim, ^altscape\$"
   fi
   echo "$END_CONF"
 }
