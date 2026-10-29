@@ -66,14 +66,14 @@ Item {
                     color: ui.accentTint(0.18)
                     border.width: 1
                     border.color: ui.tint(0.08)
-                    Grid {
+                    Image {   // the logo, dark on a light panel
                         anchors.centerIn: parent
-                        columns: 2
-                        spacing: 2
-                        Repeater {
-                            model: 4
-                            Rectangle { width: ui.px(6); height: ui.px(5); radius: 1; color: index === 3 ? ui.accent : ui.tint(0.45) }
-                        }
+                        width: ui.px(24); height: width
+                        source: Qt.resolvedUrl(ui.lightSurface ? "../../assets/logo-dark.png" : "../../assets/logo.png")
+                        sourceSize.width: 96
+                        sourceSize.height: 96
+                        smooth: true
+                        mipmap: true
                     }
                 }
 
