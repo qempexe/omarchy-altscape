@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 432 432" width="424" height="424">
+  <title>Altscape</title>
+  <defs>
+    <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="#fff"/>
+      <g fill="none" stroke="#000" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M137.6,212.9 A126,126 0 0 1 309.2,141.8" stroke-width="13"/>
+        <path d="M299.6,122.3 L309.2,141.8 L288.1,146.9" stroke-width="13"/>
+        <path d="M374.4,299.1 A126,126 0 0 1 202.8,370.2" stroke-width="13"/>
+        <path d="M212.4,389.7 L202.8,370.2 L223.9,365.1" stroke-width="13"/>
+        <g transform="translate(256 256) scale(1.42) translate(-256 -256)">
+          <rect x="240" y="212" width="66" height="50" rx="9" stroke-width="11"/>
+          <rect x="224" y="228" width="66" height="50" rx="9" stroke-width="11"/>
+          <rect x="206" y="244" width="68" height="56" rx="9" fill="#000" stroke="none"/>
+        </g>
+      </g>
+    </mask>
+  </defs>
+  <g fill="none" stroke="#EADBC8" stroke-width="14" stroke-linecap="round">
+    <path d="M447.7,325.8 A204,204 0 0 1 64.3,325.8"/>
+    <path d="M64.3,186.2 A204,204 0 0 1 447.7,186.2"/>
+  </g>
+  <circle cx="256" cy="256" r="172" fill="#EADBC8" mask="url(#cut)"/>
+</svg>
