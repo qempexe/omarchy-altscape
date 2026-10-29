@@ -34,17 +34,17 @@ BarWidget {
     // button
     readonly property string icon: ""
     readonly property string label: {
-        var c = root.cfg
+        const c = root.cfg
         if (!c) return icon
-        var t = c.barDisplay === "text" ? c.barText
+        let t = c.barDisplay === "text" ? c.barText
               : (c.barDisplay === "both" ? icon + " " + c.barText : icon)
         if (t.trim() === "") t = icon
         return c.showCount && root.svc ? t + " " + root.svc.windowCount : t
     }
     readonly property string tooltip: {
         if (!svc) return "Altscape"
-        var n = svc.windowCount
-        var s = "Altscape: " + n + (n === 1 ? " window" : " windows")
+        const n = svc.windowCount
+        let s = "Altscape: " + n + (n === 1 ? " window" : " windows")
         if (cfg.shortcut !== "off") s += " · " + (cfg.shortcut === "super" ? "Super" : "Alt") + "+Tab"
         return s
     }
@@ -62,7 +62,7 @@ BarWidget {
     // "open as" wins until someone uses pop out / dock in the header
     function chooseMode() {
         if (userPicked || !cfg) return
-        var want = cfg.openAs === "window"
+        const want = cfg.openAs === "window"
         if (want === popped) return
         if (windowShown) hideWindow()
         if (panelOpened) closePanel()
@@ -175,7 +175,7 @@ BarWidget {
         function onTabRequested(name, toggle) {
             if (!root.ux.host) root.ux.host = root
             if (root.ux.host !== root) return
-            var shown = root.panelOpened || root.windowShown
+            const shown = root.panelOpened || root.windowShown
             if (toggle && shown && root.ux.tabName === name) root.close()
             else root.showTab(name)
         }

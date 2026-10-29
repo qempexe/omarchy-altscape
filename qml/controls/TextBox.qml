@@ -57,7 +57,7 @@ Item {
     }
 
     Keys.onPressed: function(e) {
-        var t = field.text, c = field.cursor
+        const t = field.text, c = field.cursor
         if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) { field.focus = false; e.accepted = true }
         else if (e.key === Qt.Key_Backspace) { if (c > 0) { field.text = t.slice(0, c - 1) + t.slice(c); field.cursor = c - 1 } e.accepted = true }
         else if (e.key === Qt.Key_Delete) { if (c < t.length) field.text = t.slice(0, c) + t.slice(c + 1); e.accepted = true }

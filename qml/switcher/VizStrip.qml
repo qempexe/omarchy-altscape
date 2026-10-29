@@ -20,11 +20,11 @@ Flickable {
     readonly property real cardH: Math.round(cardW * 0.62) + titleH
 
     readonly property var sections: {
-        var g = sw.groups
+        const g = sw.groups
         if (!g || g.length === 0)
             return sw.items.length > 0 ? [{ header: false, start: 0, count: sw.items.length, group: null }] : []
-        var out = []
-        for (var i = 0; i < g.length; i++)
+        const out = []
+        for (let i = 0; i < g.length; i++)
             if (g[i].count > 0) out.push({ header: true, start: g[i].start, count: g[i].count, group: g[i] })
         return out
     }
@@ -38,9 +38,9 @@ Flickable {
     boundsBehavior: Flickable.StopAtBounds
 
     function reveal(t) {
-        var p = t.mapToItem(row, 0, 0)
-        var left = row.x + p.x - gap
-        var right = row.x + p.x + t.width + gap
+        const p = t.mapToItem(row, 0, 0)
+        const left = row.x + p.x - gap
+        const right = row.x + p.x + t.width + gap
         if (left < contentX) contentX = Math.max(0, left)
         else if (right > contentX + width) contentX = Math.min(Math.max(0, contentWidth - width), right - width)
     }

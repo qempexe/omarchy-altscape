@@ -63,10 +63,10 @@ Item {
     }
 
     function parse(payload) {
-        var p = String(payload || "").trim()
+        const p = String(payload || "").trim()
         if (p === "next" || p === "prev" || p === "open" || p === "current" || p === "release") return p
         try {
-            var o = JSON.parse(p)
+            const o = JSON.parse(p)
             if (o && typeof o === "object") {
                 if (o.step === 1 || o.step === "1") return "next"
                 if (o.step === -1 || o.step === "-1") return "prev"
@@ -93,7 +93,7 @@ Item {
     }
 
     function open(payload) {
-        var what = parse(payload)
+        const what = parse(payload)
         console.info("Altscape: " + what + (root.opened ? " (open)" : ""))
         if (what === "release") { root.release(); return }
         if (root.opened) {
@@ -115,7 +115,7 @@ Item {
         root.opened = true
         if (root.captured) startEnter()
         else captureWait.restart()
-        Qt.callLater(function() { keyCatcher.forceActiveFocus() })
+        Qt.callLater(() => { keyCatcher.forceActiveFocus() })
     }
 
     function startEnter() {
@@ -134,7 +134,7 @@ Item {
         root.holdMode = false
         enter.stop()
         captureWait.stop()
-        var e = root.cfg ? root.cfg.closeEffect : "none"
+        const e = root.cfg ? root.cfg.closeEffect : "none"
         if (e === "none" || !root.cfg || root.cfg.speed <= 0 || !root.captured) {
             root.closing = false
             root.opened = false
@@ -164,10 +164,10 @@ Item {
     }
 
     function pickScreen() {
-        var name = root.svc ? root.svc.info.focusedMonitor : ""
-        var list = []
+        const name = root.svc ? root.svc.info.focusedMonitor : ""
+        let list = []
         try { list = Quickshell.screens } catch (e) { list = [] }
-        for (var i = 0; i < list.length; i++) if (list[i] && list[i].name === name) return list[i]
+        for (let i = 0; i < list.length; i++) if (list[i] && list[i].name === name) return list[i]
         return null
     }
 
@@ -270,7 +270,7 @@ Item {
 
             Keys.priority: Keys.BeforeItem
             Keys.onPressed: function(e) {
-                var shift = (e.modifiers & Qt.ShiftModifier) !== 0
+                const shift = (e.modifiers & Qt.ShiftModifier) !== 0
                 if (e.key === Qt.Key_Tab) sws.step(shift ? -1 : 1)
                 else if (e.key === Qt.Key_Backtab) sws.step(-1)
                 else if (e.key === Qt.Key_Right) sws.step(1)

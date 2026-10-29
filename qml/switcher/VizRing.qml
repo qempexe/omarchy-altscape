@@ -29,9 +29,9 @@ Item {
         function onSelectedChanged() {
             turnAnim.stop()
             if (view.n <= 0) { view.turn = 0; return }
-            var cur = view.turn
-            var want = view.sw.selected
-            var delta = want - (((cur % view.n) + view.n) % view.n)
+            const cur = view.turn
+            const want = view.sw.selected
+            let delta = want - (((cur % view.n) + view.n) % view.n)
             if (delta > view.n / 2) delta -= view.n
             if (delta < -view.n / 2) delta += view.n
             if (view.sw.cfg.speed <= 0) { view.turn = cur + delta; return }

@@ -24,7 +24,7 @@ var modes = [
   { key: "compact",  label: "Compact",   hint: "Every window the same size, close together in one panel, the title underneath. Like Windows and macOS." }
 ];
 
-var modeKeys = modes.map(function(m) { return m.key; });
+var modeKeys = modes.map(m => m.key);
 
 var groups = [
   {
@@ -181,13 +181,13 @@ var groups = [
 // palette rows store their target keys (customBg...), not their own key
 var colorKeys = {};
 
-var defaults = (function() {
-  var d = { mode: "grid" };
-  for (var g = 0; g < groups.length; g++)
-    for (var i = 0; i < groups[g].items.length; i++) {
-      var it = groups[g].items[i];
+var defaults = (() => {
+  const d = { mode: "grid" };
+  for (let g = 0; g < groups.length; g++)
+    for (let i = 0; i < groups[g].items.length; i++) {
+      const it = groups[g].items[i];
       if (it.kind === "palette") {
-        for (var t = 0; t < it.targets.length; t++) {
+        for (let t = 0; t < it.targets.length; t++) {
           d[it.targets[t].key] = it.fallback[it.targets[t].key];
           colorKeys[it.targets[t].key] = it.fallback[it.targets[t].key];
         }
@@ -196,10 +196,10 @@ var defaults = (function() {
   return d;
 })();
 
-var itemByKey = (function() {
-  var m = {};
-  for (var g = 0; g < groups.length; g++)
-    for (var i = 0; i < groups[g].items.length; i++)
+var itemByKey = (() => {
+  const m = {};
+  for (let g = 0; g < groups.length; g++)
+    for (let i = 0; i < groups[g].items.length; i++)
       m[groups[g].items[i].key] = groups[g].items[i];
   return m;
 })();
@@ -212,14 +212,14 @@ function clean(key, v) {
   if (key === "mode") return modeKeys.indexOf(String(v)) >= 0 ? String(v) : "grid";
   if (colorKeys[key] !== undefined) return validHex(v) ? String(v).toLowerCase() : colorKeys[key];
   if (key === "colorMode" && v === "mono") v = "monochrome";
-  var it = itemByKey[key];
+  const it = itemByKey[key];
   if (!it) return v;
   if (v === null || v === undefined) return it.fallback;
   switch (it.kind) {
   case "enum":
     return it.options.indexOf(String(v)) >= 0 ? String(v) : it.fallback;
   case "int":
-    var n = Number(v);
+    const n = Number(v);
     if (!isFinite(n)) return it.fallback;
     return Math.max(it.min, Math.min(it.max, Math.round(n)));
   case "bool":
@@ -229,15 +229,15 @@ function clean(key, v) {
   case "color":
     return validHex(v) ? String(v) : it.fallback;
   default:
-    var s = String(v);
+    const s = String(v);
     return it.maxLength ? s.slice(0, it.maxLength) : s;
   }
 }
 
 function resolve(values) {
-  var out = {};
-  var src = values || {};
-  for (var k in defaults) out[k] = clean(k, src[k]);
+  const out = {};
+  const src = values || {};
+  for (const k in defaults) out[k] = clean(k, src[k]);
   // old setting: dim amount -> darken backdrop
   if (src.backdrop === undefined && Number(src.dim) > 0) {
     out.backdrop = "dim";
@@ -248,8 +248,8 @@ function resolve(values) {
 
 // stable hue per app name (by category colors)
 function hueOf(name) {
-  var t = String(name || "").toLowerCase();
-  var h = 0;
-  for (var k = 0; k < t.length; k++) h = (h * 31 + t.charCodeAt(k)) % 360;
+  const t = String(name || "").toLowerCase();
+  let h = 0;
+  for (let k = 0; k < t.length; k++) h = (h * 31 + t.charCodeAt(k)) % 360;
   return h / 360;
 }

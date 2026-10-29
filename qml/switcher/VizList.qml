@@ -13,11 +13,11 @@ Item {
     readonly property real thumbH: Math.round(colW / 1.6)
 
     readonly property var sections: {
-        var g = sw.groups
+        const g = sw.groups
         if (!g || g.length === 0)
             return sw.items.length > 0 ? [{ start: 0, count: sw.items.length }] : []
-        var out = []
-        for (var i = 0; i < g.length; i++)
+        const out = []
+        for (let i = 0; i < g.length; i++)
             if (g[i].count > 0) out.push({ start: g[i].start, count: g[i].count })
         return out
     }
@@ -36,7 +36,7 @@ Item {
         boundsBehavior: Flickable.StopAtBounds
 
         function reveal(t) {
-            var p = t.mapToItem(col, 0, 0)
+            const p = t.mapToItem(col, 0, 0)
             if (p.y < contentY) contentY = Math.max(0, p.y - view.gap)
             else if (p.y + t.height > contentY + height)
                 contentY = Math.min(Math.max(0, contentHeight - height), p.y + t.height - height + view.gap)

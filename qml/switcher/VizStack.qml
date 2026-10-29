@@ -36,7 +36,7 @@ Item {
         delegate: WindowCard {
             // distance behind the selection, wraps so the deck never runs out
             readonly property real d: {
-                var x = index - view.pos
+                let x = index - view.pos
                 if (view.n > 2 && x < -1.5) x += view.n
                 return x
             }

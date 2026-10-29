@@ -18,7 +18,7 @@ Item {
     // local files and the icon theme only. if some .desktop file points at a url
     // we just show the letter, never fetch anything
     readonly property string url: {
-        var s = String(source || "")
+        const s = String(source || "")
         if (s.charAt(0) === "/") return "file://" + s
         if (/^(file:\/\/\/|image:\/\/)/.test(s)) return s
         return ""

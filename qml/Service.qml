@@ -49,8 +49,8 @@ Item {
     function setValue(key, value) { settingsStore.set(key, Schema.clean(key, value)) }
     function setMode(name) { if (Schema.modeKeys.indexOf(String(name)) >= 0) setValue("mode", String(name)) }
     function stepMode(d) {
-        var keys = Schema.modeKeys
-        var i = keys.indexOf(cfg.mode)
+        const keys = Schema.modeKeys
+        const i = keys.indexOf(cfg.mode)
         setMode(keys[(Math.max(0, i) + d + keys.length) % keys.length])
     }
 
@@ -96,14 +96,14 @@ Item {
     }
 
     function absorbSnapshot(text) {
-        var snap
+        let snap
         try { snap = JSON.parse(String(text || "")) } catch (e) { return }
         if (!snap || typeof snap !== "object") return
-        var next = Model.parseSnapshot(snap)
-        var tops = []
+        const next = Model.parseSnapshot(snap)
+        let tops = []
         try { tops = Hyprland.toplevels ? Hyprland.toplevels.values : [] } catch (e2) { tops = [] }
-        for (var i = 0; i < next.windows.length; i++) {
-            var w = next.windows[i]
+        for (let i = 0; i < next.windows.length; i++) {
+            const w = next.windows[i]
             w.icon = iconFor(w.cls)
             w.urgent = urgentMap[w.key] === true
             w.toplevel = waylandFor(tops, w.key)
@@ -115,10 +115,10 @@ Item {
 
     // wayland toplevel for a hyprland window (previews + closing need it)
     function waylandFor(tops, key) {
-        for (var i = 0; i < tops.length; i++) {
-            var t = tops[i]
+        for (let i = 0; i < tops.length; i++) {
+            const t = tops[i]
             if (!t) continue
-            var a = ""
+            let a = ""
             try { a = Model.norm(t.address) } catch (e) { a = "" }
             if (a !== "" && a === key) {
                 try { return t.wayland ? t.wayland : null } catch (e2) { return null }
@@ -141,19 +141,19 @@ Item {
         target: Hyprland
         ignoreUnknownSignals: true
         function onRawEvent(event) {
-            var name = ""
-            var data = ""
+            let name = ""
+            let data = ""
             try { name = String(event.name); data = String(event.data) } catch (e) { return }
             if (name === "urgent") {
-                var u = {}
-                for (var k in root.urgentMap) u[k] = true
+                const u = {}
+                for (const k in root.urgentMap) u[k] = true
                 u[Model.norm(data.split(",")[0])] = true
                 root.urgentMap = u
             } else if (name === "activewindowv2") {
-                var key = Model.norm(data.split(",")[0])
+                const key = Model.norm(data.split(",")[0])
                 if (root.urgentMap[key] === true) {
-                    var n = {}
-                    for (var j in root.urgentMap) if (j !== key) n[j] = true
+                    const n = {}
+                    for (const j in root.urgentMap) if (j !== key) n[j] = true
                     root.urgentMap = n
                 }
             }
@@ -166,7 +166,7 @@ Item {
 
     // icon name or absolute path -> path
     function resolveIcon(icon) {
-        var i = String(icon || "")
+        const i = String(icon || "")
         if (i === "") return ""
         if (i.charAt(0) === "/") return i
         return String(Quickshell.iconPath(i, true) || "")
@@ -177,26 +177,26 @@ Item {
     // exact host+path first, then just the host
     property var webIcons: null
     function webKey(url) {
-        var m = String(url).match(/^[a-z]+:\/\/([^\/?#"' ]+)([^?#"' ]*)/i)
+        const m = String(url).match(/^[a-z]+:\/\/([^\/?#"' ]+)([^?#"' ]*)/i)
         if (!m) return null
-        var host = m[1].toLowerCase()
-        var path = m[2] || "/"
+        const host = m[1].toLowerCase()
+        const path = m[2] || "/"
         return { full: host + "_" + path.replace(/\//g, "_"), host: host.replace(/^www\./, "") }
     }
     function buildWebIcons() {
-        var full = {}, host = {}
-        var list = []
+        const full = {}, host = {}
+        let list = []
         try { list = DesktopEntries.applications.values } catch (e) { list = [] }
-        for (var i = 0; i < list.length; i++) {
-            var e = list[i]
+        for (let i = 0; i < list.length; i++) {
+            const e = list[i]
             if (!e || !e.icon) continue
-            var ex = ""
+            let ex = ""
             try { ex = String(e.execString || e.command || "") } catch (e2) { ex = "" }
-            var u = ex.match(/(https?:\/\/[^\s"']+)/)
+            const u = ex.match(/(https?:\/\/[^\s"']+)/)
             if (!u) continue
-            var k = webKey(u[1])
+            const k = webKey(u[1])
             if (!k) continue
-            var p = resolveIcon(e.icon)
+            const p = resolveIcon(e.icon)
             if (p === "") continue
             if (full[k.full] === undefined) full[k.full] = p
             if (host[k.host] === undefined) host[k.host] = p
@@ -204,13 +204,13 @@ Item {
         webIcons = { full: full, host: host }
     }
     function webIconFor(cls) {
-        var m = String(cls).match(/^(?:chrome|chromium|brave|msedge|vivaldi|helium|thorium)-(.+?)-(?:Default|Profile_?\d+|Person_?\d+)$/i)
+        const m = String(cls).match(/^(?:chrome|chromium|brave|msedge|vivaldi|helium|thorium)-(.+?)-(?:Default|Profile_?\d+|Person_?\d+)$/i)
         if (!m) return ""
         if (webIcons === null) buildWebIcons()
-        var key = m[1].toLowerCase()
-        var own = Object.prototype.hasOwnProperty
+        const key = m[1].toLowerCase()
+        const own = Object.prototype.hasOwnProperty
         if (own.call(webIcons.full, key)) return webIcons.full[key]
-        var h = key.split("__")[0].split("_")[0].replace(/^www\./, "")
+        let h = key.split("__")[0].split("_")[0].replace(/^www\./, "")
         while (h.indexOf(".") > 0) {             // also try the parent domain
             if (own.call(webIcons.host, h)) return webIcons.host[h]
             h = h.substring(h.indexOf(".") + 1)
@@ -224,38 +224,38 @@ Item {
     function plainIconName(s) { return /^[A-Za-z0-9][A-Za-z0-9._+-]{0,127}$/.test(s) }
 
     function iconFor(cls) {
-        var name = String(cls || "")
+        const name = String(cls || "")
         if (name === "" || name.length > 256) return ""
         if (Object.prototype.hasOwnProperty.call(iconCache, name)) return iconCache[name]
-        var web = ""
+        let web = ""
         try { web = webIconFor(name) } catch (ew) { web = "" }
         if (web !== "") {
-            var cw = {}
-            for (var kw in iconCache) cw[kw] = iconCache[kw]
+            const cw = {}
+            for (const kw in iconCache) cw[kw] = iconCache[kw]
             cw[name] = web
             iconCache = cw
             return web
         }
-        var lower = name.toLowerCase()
-        var cands = [name, lower, lower.replace(/ /g, "-"), lower.split(".").pop()].filter(plainIconName)
-        var p = ""
+        const lower = name.toLowerCase()
+        const cands = [name, lower, lower.replace(/ /g, "-"), lower.split(".").pop()].filter(plainIconName)
+        let p = ""
         try {
-            for (var i = 0; i < cands.length && p === ""; i++) {
-                var e = DesktopEntries.byId(cands[i])
+            for (let i = 0; i < cands.length && p === ""; i++) {
+                const e = DesktopEntries.byId(cands[i])
                 if (e && e.icon) p = resolveIcon(e.icon)
             }
             if (p === "" && typeof DesktopEntries.heuristicLookup === "function") {
-                var h = DesktopEntries.heuristicLookup(name)
+                const h = DesktopEntries.heuristicLookup(name)
                 if (h && h.icon) p = resolveIcon(h.icon)
             }
-            for (var j = 0; j < cands.length && p === ""; j++)
+            for (let j = 0; j < cands.length && p === ""; j++)
                 p = String(Quickshell.iconPath(cands[j], true) || "")
         } catch (err) {
             p = ""
         }
         if (p !== "") {
-            var c = {}
-            for (var k in iconCache) c[k] = iconCache[k]
+            const c = {}
+            for (const k in iconCache) c[k] = iconCache[k]
             c[name] = p
             iconCache = c
         }
@@ -292,8 +292,8 @@ Item {
     }
 
     function closeWindow(address) {
-        var key = Model.norm(address)
-        var t = null
+        const key = Model.norm(address)
+        let t = null
         try { t = waylandFor(Hyprland.toplevels.values, key) } catch (e) { t = null }
         if (t && typeof t.close === "function") { t.close(); refreshTimer.restart(); return true }
         return false
@@ -326,7 +326,7 @@ Item {
         id: bindProc
         stdout: StdioCollector {
             onStreamFinished: {
-                var st
+                let st
                 try { st = JSON.parse(String(text || "")) } catch (e) { st = null }
                 if (!st || typeof st !== "object") st = { ok: false, error: "the keybind helper gave no answer" }
                 root.bindStatus = st

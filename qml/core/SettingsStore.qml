@@ -25,13 +25,13 @@ Item {
     signal changed()
 
     function get(key) {
-        var v = values[key]
+        const v = values[key]
         return v === undefined ? null : v
     }
 
     function set(key, value) {
-        var next = {}
-        for (var k in values) next[k] = values[k]
+        const next = {}
+        for (const k in values) next[k] = values[k]
         if (value === null || value === undefined) delete next[key]
         else next[key] = value
         values = next
@@ -41,8 +41,8 @@ Item {
 
     // reset everything in one write
     function resetAll(defaults) {
-        var next = {}
-        for (var k in defaults) next[k] = defaults[k]
+        const next = {}
+        for (const k in defaults) next[k] = defaults[k]
         values = next
         persist()
         changed()
@@ -71,16 +71,16 @@ Item {
     // startup: file values, with in-memory changes on top
     function absorb(text) {
         if (loaded) return
-        var fromFile
+        let fromFile
         try {
-            var parsed = JSON.parse(String(text || "{}"))
+            const parsed = JSON.parse(String(text || "{}"))
             fromFile = (parsed && typeof parsed === "object" && !Array.isArray(parsed)) ? parsed : ({})
         } catch (e) {
             fromFile = ({})
         }
-        var merged = {}
-        for (var k in fromFile) merged[k] = fromFile[k]
-        for (var j in values) merged[j] = values[j]
+        const merged = {}
+        for (const k in fromFile) merged[k] = fromFile[k]
+        for (const j in values) merged[j] = values[j]
         values = merged
         loaded = true
         changed()

@@ -9,11 +9,11 @@ Item {
     readonly property var ui: sw.ui
 
     readonly property var sections: {
-        var g = sw.groups
+        const g = sw.groups
         if (!g || g.length === 0)
             return sw.items.length > 0 ? [{ start: 0, count: sw.items.length }] : []
-        var out = []
-        for (var i = 0; i < g.length; i++)
+        const out = []
+        for (let i = 0; i < g.length; i++)
             if (g[i].count > 0) out.push({ start: g[i].start, count: g[i].count })
         return out
     }
@@ -22,10 +22,10 @@ Item {
     readonly property real grow: 1.7
     // base size, shrunk until the row (incl. the magnified ones) fits
     readonly property real cellW: {
-        var want = Math.max(48, sw.cfg.tileSize * 0.6 * k)
-        var n = sw.items.length
+        const want = Math.max(48, sw.cfg.tileSize * 0.6 * k)
+        const n = sw.items.length
         if (n <= 0) return want
-        var room = width - (n - 1) * gap - Math.max(0, sections.length - 1) * gap * 3
+        const room = width - (n - 1) * gap - Math.max(0, sections.length - 1) * gap * 3
         return Math.max(28, Math.min(want, room / (n + (grow - 1) * 2.2), height / grow * 1.6 * 0.9))
     }
     readonly property real cellH: Math.round(cellW / 1.6)
@@ -34,7 +34,7 @@ Item {
 
     // how much bigger, by distance from the selection
     function magnify(i) {
-        var d = Math.abs(i - sw.selected)
+        const d = Math.abs(i - sw.selected)
         return 1 + (grow - 1) * Math.max(0, 1 - d / 2.2)
     }
 

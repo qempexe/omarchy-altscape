@@ -98,9 +98,9 @@ Item {
                         elide: Text.ElideRight
                         text: {
                             if (!view.svc) return "Starting…"
-                            var n = view.svc.windowCount
-                            var s = n + (n === 1 ? " window" : " windows")
-                            var b = view.svc.bindStatus
+                            const n = view.svc.windowCount
+                            let s = n + (n === 1 ? " window" : " windows")
+                            const b = view.svc.bindStatus
                             if (view.svc.cfg.shortcut === "off") s += "  ·  no shortcut"
                             else if (b && b.ok && b.shortcut === view.svc.cfg.shortcut && b.active === "false")
                                 s += "  ·  shortcut written, but Hyprland is not using it"

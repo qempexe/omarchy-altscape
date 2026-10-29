@@ -77,7 +77,7 @@ Item {
         if (name === "custom")
             return { bg: hexOr(cfgSafe.customBg, "#141414"), fg: hexOr(cfgSafe.customFg, "#e0e0e0"), ac: hexOr(cfgSafe.accentColor, "#ff6a1f") }
         if (name === "monochrome") {
-            var g = grey(lumOf(barSurface))
+            const g = grey(lumOf(barSurface))
             return { bg: g, fg: contrast(g), ac: contrast(g) }
         }
         return { bg: barSurface, fg: barFg, ac: themeAc }

@@ -41,12 +41,12 @@ Item {
     function same(a, b) { return str(a) === str(b) }
     function labelFor(opt) { return labels[opt] !== undefined ? labels[opt] : String(opt) }
     function show(v) {
-        var n = Number(v) / divisor
+        const n = Number(v) / divisor
         return isFinite(n) ? String(parseFloat(n.toFixed(decimals))) : "?"
     }
     function nudge(dir) {
-        var cur = Number(current)
-        var v = Math.max(min, Math.min(max, cur + dir * step))
+        const cur = Number(current)
+        const v = Math.max(min, Math.min(max, cur + dir * step))
         if (v !== cur) commit(v)
     }
     function validHex(s) { return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s) }
@@ -646,9 +646,9 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     function apply(mx) {
-                        var f = Math.max(0, Math.min(1, mx / width))
-                        var raw = root.min + f * root.span
-                        var snapped = root.min + Math.round((raw - root.min) / root.step) * root.step
+                        const f = Math.max(0, Math.min(1, mx / width))
+                        const raw = root.min + f * root.span
+                        let snapped = root.min + Math.round((raw - root.min) / root.step) * root.step
                         snapped = Math.max(root.min, Math.min(root.max, snapped))
                         if (snapped !== Number(root.current)) root.commit(snapped)
                     }

@@ -41,12 +41,12 @@ Item {
 
     function rebuild() {
         if (!svc) return
-        var keep = selectedItem ? selectedItem.key : ""
-        var m = Model.build(svc.info, cfg)
+        const keep = selectedItem ? selectedItem.key : ""
+        const m = Model.build(svc.info, cfg)
         marks = { current: m.current, next: m.next, prev: m.prev }
         groups = m.groups
         items = m.items
-        var i = keep !== "" ? Model.indexOfKey(items, keep) : -1
+        const i = keep !== "" ? Model.indexOfKey(items, keep) : -1
         if (i >= 0) selected = i
         else selected = Math.max(0, Math.min(selected, items.length - 1))
     }
@@ -64,7 +64,7 @@ Item {
     // Keep the highlighted window while open, even before the first explicit
     // selection. Focus-history updates must not replace the opening target.
     function refreshKeeping(where) {
-        var keep = selectedItem ? selectedItem.key : ""
+        const keep = selectedItem ? selectedItem.key : ""
         rebuild()
         if (!userMoved && Model.indexOfKey(items, keep) < 0)
             selected = items.length === 0 ? 0 : marks[where]
@@ -81,7 +81,7 @@ Item {
     // stationary cursor. The first event only records its global position;
     // later events select only if the cursor itself moved, across all cards.
     function point(i, position) {
-        var moved = pointerKnown && (Math.abs(position.x - pointerPosition.x) > 0.5
+        const moved = pointerKnown && (Math.abs(position.x - pointerPosition.x) > 0.5
                                      || Math.abs(position.y - pointerPosition.y) > 0.5)
         if (!pointerKnown || moved) pointerPosition = position
         pointerKnown = true
@@ -100,9 +100,9 @@ Item {
 
     function stepRow(d) {
         if (items.length === 0) return
-        var n = Math.max(1, navCols)
+        const n = Math.max(1, navCols)
         if (n === 1) { step(d); return }
-        var t = selected + d * n
+        const t = selected + d * n
         if (t < 0 || t >= items.length) return
         pointed = false
         selected = t
@@ -112,17 +112,17 @@ Item {
     // 1-9 -> first window of that group
     function jumpGroup(n) {
         if (groups.length === 0 || n < 1 || n > groups.length) return
-        var g = groups[n - 1]
+        const g = groups[n - 1]
         if (g.count > 0) select(g.start)
     }
 
     function activate(i) {
-        var it = items[i === undefined ? selected : i]
+        const it = items[i === undefined ? selected : i]
         if (it) activated(it.address)
     }
 
     function closeAt(i) {
-        var it = items[i === undefined ? selected : i]
+        const it = items[i === undefined ? selected : i]
         if (it && svc) svc.closeWindow(it.address)
     }
 

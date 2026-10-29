@@ -30,8 +30,8 @@ Item {
     }
 
     function offsetFor(d) {
-        var a = Math.abs(d)
-        var s = d < 0 ? -1 : 1
+        const a = Math.abs(d)
+        const s = d < 0 ? -1 : 1
         return s * (Math.min(a, 1) * cardW * 0.66 + Math.max(a - 1, 0) * cardW * 0.30)
     }
 

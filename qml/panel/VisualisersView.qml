@@ -102,7 +102,7 @@ Item {
                 Layout.fillWidth: true
                 elide: Text.ElideRight
                 readonly property var m: {
-                    for (var i = 0; i < Schema.modes.length; i++)
+                    for (let i = 0; i < Schema.modes.length; i++)
                         if (root.svc && Schema.modes[i].key === root.svc.cfg.mode) return Schema.modes[i]
                     return Schema.modes[0]
                 }

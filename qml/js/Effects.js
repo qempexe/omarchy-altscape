@@ -6,8 +6,8 @@
 //
 // returns opacity, scale, yScale (unfold), dx, dy
 function state(effect, t, dist) {
-  var c = Math.max(0, Math.min(1, t));
-  var s = { opacity: 1, scale: 1, yScale: 1, dx: 0, dy: 0 };
+  const c = Math.max(0, Math.min(1, t));
+  const s = { opacity: 1, scale: 1, yScale: 1, dx: 0, dy: 0 };
   switch (effect) {
   case "fade":
     s.opacity = 1 - c;
@@ -48,7 +48,7 @@ function springy(effect) { return effect === "pop"; }
 // "changing windows" effects. w goes 0 -> 1 as a window gets selected.
 // returns scale, lift (px), glow, dimOthers, edge (border width)
 function selection(effect, w) {
-  var s = { scale: 1, lift: 0, glow: 0, dimOthers: 0.18, edge: 2 };
+  const s = { scale: 1, lift: 0, glow: 0, dimOthers: 0.18, edge: 2 };
   switch (effect) {
   case "grow":
     s.scale = 1 + 0.07 * w;

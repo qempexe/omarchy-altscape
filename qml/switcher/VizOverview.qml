@@ -15,11 +15,11 @@ Item {
 
     // one box per workspace (in "recent" order we regroup here)
     readonly property var boxes: {
-        var byId = {}
-        var out = []
-        var items = sw.items
-        for (var i = 0; i < items.length; i++) {
-            var it = items[i]
+        const byId = {}
+        const out = []
+        const items = sw.items
+        for (let i = 0; i < items.length; i++) {
+            const it = items[i]
             if (!byId[it.ws]) {
                 byId[it.ws] = { id: it.ws, label: it.wsLabel, monitor: it.monitor, special: it.special,
                                 active: false, aspect: it.aspect, count: 0, idx: [] }
@@ -28,14 +28,14 @@ Item {
             byId[it.ws].idx.push(i)
             byId[it.ws].count++
         }
-        var g = sw.groups || []
-        for (var j = 0; j < g.length; j++) {
+        const g = sw.groups || []
+        for (let j = 0; j < g.length; j++) {
             if (byId[g[j].id]) byId[g[j].id].active = g[j].active
             else if (g[j].count === 0)
                 out.push({ id: g[j].id, label: g[j].label, monitor: g[j].monitor, special: false,
                            active: g[j].active, aspect: g[j].aspect, count: 0, idx: [] })
         }
-        out.sort(function(a, b) {
+        out.sort((a, b) => {
             if (a.special !== b.special) return a.special ? 1 : -1
             return a.id - b.id
         })
@@ -43,8 +43,8 @@ Item {
     }
 
     readonly property real aspect: {
-        var a = 0
-        for (var i = 0; i < boxes.length; i++) a = Math.max(a, boxes[i].aspect || 0)
+        let a = 0
+        for (let i = 0; i < boxes.length; i++) a = Math.max(a, boxes[i].aspect || 0)
         return a > 0 ? a : 16 / 9
     }
     readonly property var fit: Model.bestGrid(boxes.length, aspect, width, height, gap, headH)
