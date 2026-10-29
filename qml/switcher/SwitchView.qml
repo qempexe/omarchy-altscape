@@ -23,6 +23,7 @@ Item {
             case "dock": return dock
             case "compact": return compact
             case "spread": return spread
+            case "columns": return columns
             default: return grid
             }
         }
@@ -38,6 +39,7 @@ Item {
     Component { id: dock; VizDock { sw: root.sw; k: root.k } }
     Component { id: compact; VizCompact { sw: root.sw; k: root.k } }
     Component { id: spread; VizSpread { sw: root.sw; k: root.k } }
+    Component { id: columns; VizColumns { sw: root.sw; k: root.k } }
 
     Txt {
         ui: root.sw ? root.sw.ui : null

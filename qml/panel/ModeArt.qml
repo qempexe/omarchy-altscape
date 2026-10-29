@@ -144,4 +144,23 @@ Item {
             Rectangle { width: 18; height: 13; radius: 2; color: root.soft }
         }
     }
+    // columns: one per workspace
+    Row {
+        visible: root.mode === "columns"
+        anchors.centerIn: parent
+        spacing: 5
+        Repeater {
+            model: [3, 2, 1, 2]
+            Column {
+                readonly property int col: index
+                anchors.top: parent.top
+                spacing: 2
+                Rectangle { width: 13; height: 2; radius: 1; color: root.soft; opacity: 0.7 }
+                Repeater {
+                    model: modelData
+                    Rectangle { width: 13; height: 8; radius: 1.5; color: col === 1 && index === 1 ? root.ink : root.soft }
+                }
+            }
+        }
+    }
 }
