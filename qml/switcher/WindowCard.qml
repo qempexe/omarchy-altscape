@@ -123,7 +123,7 @@ Item {
                 anchors.fill: parent
                 active: shot.wantShot
                 sourceComponent: Component {
-                    ScreencopyView {
+                    SmoothShot {
                         captureSource: card.item ? card.item.toplevel : null
                         live: card.sw.cfg.previews === "live" && card.sw.active
                     }
