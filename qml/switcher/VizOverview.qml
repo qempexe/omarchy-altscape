@@ -103,7 +103,7 @@ Item {
                                 active: view.sw.cfg.previews !== "off" && win.roomy && win.it !== null
                                         && win.it.toplevel !== null && win.it.toplevel !== undefined
                                 sourceComponent: Component {
-                                    ScreencopyView {
+                                    SmoothShot {
                                         captureSource: win.it ? win.it.toplevel : null
                                         live: view.sw.cfg.previews === "live" && view.sw.active
                                     }
