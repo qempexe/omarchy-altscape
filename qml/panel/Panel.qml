@@ -75,9 +75,6 @@ Item {
     function locate() {
         const item = root.anchorItem
         if (!item) return
-        const scr = item.screen
-        const sw = scr ? scr.width : 1920
-        const sh = scr ? scr.height : 1080
         let side = ""
         let qsWin = null
         let win = null
@@ -85,6 +82,10 @@ Item {
         // 1. ask the bar window which edge it's on
         try { qsWin = item.QsWindow.window } catch (e0) { qsWin = null }
         try { win = qsWin ? qsWin : item.Window.window } catch (e1) { win = null }
+        let scr = null
+        try { scr = win && win.screen ? win.screen : null } catch (e4) { scr = null }
+        const sw = scr && scr.width > 0 ? scr.width : 1920
+        const sh = scr && scr.height > 0 ? scr.height : 1080
         try {
             const an = win ? win.anchors : null
             if (an) {
@@ -119,31 +120,50 @@ Item {
         root.barAtTop = side === "top"
         root.barAtLeft = side === "left"
 
-        // anchor rect on the bar window's outer edge
+        // Anchor rectangle on the bar's outer edge (window coordinates).
         const ww = (win && win.width > 0) ? win.width : 0
         const wh = (win && win.height > 0) ? win.height : 0
         const small = root.vertical ? (ww > 0 && ww < sw * 0.5) : (wh > 0 && wh < sh * 0.5)
-        root.useRect = !!qsWin && small
+        // Omarchy 4.5 and later: the bar window spans its screen and the bar is a strip
+        // at its edge, so the panel hangs off the outer edge of that strip
+        const spans = !!qsWin && !small && (root.vertical ? ww >= sw * 0.5 : wh >= sh * 0.5)
+        // how thick the strip is: what the bar window keeps free (a notch or a floating bar
+        // makes it more than the bar's size), else the bar's size
+        let ez = 0
+        try { ez = win && typeof win.exclusiveZone === "number" && win.exclusiveZone > 0 && win.exclusiveZone < (root.vertical ? sw : sh) * 0.5 ? win.exclusiveZone : 0 } catch (e5) { ez = 0 }
+        const bs = Math.max(ez, root.bar && typeof root.bar.barSize === "number" && root.bar.barSize > 0 ? root.bar.barSize : 0)
+        let thick = small ? (root.vertical ? ww : wh) : 40
+        root.useRect = !!qsWin && (small || spans)
         root.anchorWin = qsWin
         if (root.useRect) {
             if (root.vertical) {
+                // the strip ends past the widget, and is at least as thick as the bar
+                const tv = small ? ww : Math.max(bs, side === "left" ? pos.x + item.width : ww - pos.x)
                 root.rectW = 1
                 root.rectH = Math.max(1, item.height)
                 root.rectY = pos.y
-                root.rectX = side === "left" ? Math.max(0, ww - 1) : 0
+                root.rectX = side === "left" ? Math.max(0, tv - 1) : Math.max(0, ww - tv)
+                thick = tv
             } else {
+                const th = small ? wh : Math.max(bs, side === "top" ? pos.y + item.height : wh - pos.y)
                 root.rectW = Math.max(1, item.width)
                 root.rectH = 1
                 root.rectX = pos.x
-                root.rectY = side === "top" ? Math.max(0, wh - 1) : 0
+                root.rectY = side === "top" ? Math.max(0, th - 1) : Math.max(0, wh - th)
+                thick = th
             }
             root.extra = 0
         } else {
             root.extra = 6                    // only the widget is known: allow a little for bar padding
         }
 
+        // Set the anchor here rather than with bindings: Quickshell unsets the anchor's
+        // item whenever its window is written, and the other way round, so two bindings
+        // can undo each other and leave the panel with nothing to hang off.
+        if (root.useRect) popup.anchor.window = qsWin
+        else popup.anchor.item = item
+
         // max height that still fits under/over the bar
-        const thick = (!root.vertical && wh > 0 && wh < sh * 0.5) ? wh : 40
         const room = root.vertical ? sh - 40 : sh - thick - root.gap - root.extra - 16
         root.maxHeight = Math.max(300, Math.min(1100, room))
     }
@@ -178,8 +198,6 @@ Item {
         implicitWidth: (root.ui ? root.ui.cfgSafe.windowWidth : 600) + root.padLeft + root.padRight
         implicitHeight: Math.min(root.maxHeight, root.ui ? root.ui.cfgSafe.windowHeight : 680) + root.padTop + root.padBottom
 
-        anchor.item: root.useRect ? null : root.anchorItem
-        anchor.window: root.useRect ? root.anchorWin : null
         anchor.rect.x: root.rectX
         anchor.rect.y: root.rectY
         anchor.rect.width: root.rectW
