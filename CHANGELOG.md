@@ -4,6 +4,16 @@ All notable changes to Altscape. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] - 2026-11-05
+
+### Fixed
+
+- On Omarchy 4.5, where the bar's window spans the screen, the panel didn't open, or
+  opened over the bar. It now opens off the bar's outer edge, on any edge and with any
+  bar size.
+- Window previews no longer break up and shimmer when they are shrunk into small cards:
+  they are now mipmapped. Thanks to JordiPutellas (#10).
+
 ## [1.1.0] - 2026-10-29
 
 ### Added
@@ -76,6 +86,7 @@ All notable changes to Altscape. The format follows
   colors that follow the theme.
 - A bar panel to pick the layout and tune every setting, and a managed Alt+Tab bind.
 
+[1.1.1]: https://github.com/qempexe/omarchy-altscape/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/qempexe/omarchy-altscape/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/qempexe/omarchy-altscape/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/qempexe/omarchy-altscape/compare/v1.0.0...v1.0.1

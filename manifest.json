@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.qempexe.altscape",
   "name": "Altscape",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "qempexe",
   "license": "MIT",
   "description": "Window switcher for Alt+Tab with twelve ways to see your windows: grid, strip, carousel, ring, list, workspace overview, stack, dock, compact, spread, columns and fan. Live previews, grouped by workspace, all workspaces or just the current one, and a bar panel to pick the style and tune every setting.",
