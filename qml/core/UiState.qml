@@ -30,6 +30,8 @@ Item {
     readonly property real tintPct: cfgSafe.surfaceTint
     readonly property bool frameOn: cfgSafe.frame === true
     readonly property real opacityF: cfgSafe.opacity / 100
+    // the window titles under the previews (Compact's selected title is one step bigger)
+    readonly property int titleSize: cfgSafe.titleSize
     readonly property string cardStyle: cfgSafe.cardStyle
     readonly property real radius: cfgSafe.cornerRadius
     readonly property int speed: cfgSafe.speed
@@ -40,6 +42,10 @@ Item {
     property color themeAccent: "transparent"
     property color themeUrgent: "#e06c75"
     property string fontName: ""
+
+    // the theme's window border (colors + angle), read by Service
+    property var borderColors: []
+    property real borderAngle: 0
 
     function lumOf(c) { return 0.299 * c.r + 0.587 * c.g + 0.114 * c.b }
     // black or white, whatever reads better on c
@@ -66,6 +72,17 @@ Item {
     readonly property color themeAc: hasThemeAccent ? Qt.rgba(themeAccent.r, themeAccent.g, themeAccent.b, 1) : barFg
     readonly property color accent: custom ? hexOr(cfgSafe.accentColor, "#ff6a1f")
         : mono ? fg : themeAc
+
+    // The window outline: the window border's gradient, one color from it, or the accent.
+    readonly property bool frameGradientOn: frameOn && cfgSafe.frameGradient !== false && borderColors.length > 1
+    readonly property color frameColor: {
+        const n = borderColors.length
+        const pick = cfgSafe.frameColor
+        if (n === 0 || pick === "accent" || !pick) return accent
+        if (pick === "first") return Qt.color(borderColors[0])
+        if (pick === "last") return Qt.color(borderColors[n - 1])
+        return Qt.color(borderColors[Math.floor((n - 1) / 2)])
+    }
 
     // by category: a color per app, accent otherwise
     function appColor(cls) {
@@ -110,5 +127,7 @@ Item {
     function r(k) { return Math.min(24, Math.round(radius * k)) }
     readonly property real baseScale: 0.82
     function fs(n) { return Math.max(7, Math.round(n * fontPct / 100 * baseScale)) }
+    // pixel size of a window title (Window title size setting, scaled like all text)
+    readonly property int titleFs: fs(titleSize)
     function px(n) { return Math.round(n * densityF) }
 }

@@ -15,6 +15,8 @@ restores the old floating window just after a transient focus acknowledgement.
 Acknowledgement also raises the selected window, including a window that already
 has keyboard focus but is behind other floating windows. Cancelled, replaced and
 unavailable targets must not trigger a raise.
+Row-navigation tests check that Up and Down go to the window above and below in a grid
+with rows of different lengths, across workspace blocks and at the edges.
 Selection-refresh tests keep the highlighted window through focus-history
 changes while the switcher is open, including before any explicit navigation.
 No running Hyprland session is required.

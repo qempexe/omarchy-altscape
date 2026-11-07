@@ -9,7 +9,7 @@ Item {
     readonly property var ui: sw.ui
 
     readonly property int n: sw.items.length
-    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(11) * 1.9) : 0
+    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.titleFs * 1.9) : 0
     readonly property real captionH: 0
     readonly property real cardW: Math.max(120, Math.min(Math.round(sw.cfg.tileSize * 1.8 * k), width * 0.55,
                                                          (height - captionH - titleH) / 0.62 * 0.82))

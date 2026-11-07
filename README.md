@@ -151,12 +151,15 @@ put it back, and **Reset all** in the header puts back everything but the layout
 | | Same size for every window | off | each preview at its window's own shape |
 | | Icon size | 40 | 16 to 96 |
 | | Window titles | off | |
+| | Window title size | 11 | 8 to 28, follows Text size |
 | | Attention | Pulse | or Ring, or Off |
 | Look | Colors | Follow theme | or Custom, Monochrome, By category |
 | | Card style | Soft | or Outline, Flat |
 | | Spacing | Comfortable | or Compact, Spacious |
 | | Roundness | 6 | 0 to 20 |
-| | Window outline | off | the accent around the panel |
+| | Window outline | off | colors the edge of the panel |
+| | Outline gradient | on | with the outline: your window border's whole gradient, at its angle |
+| | Outline color | Accent | or the border's first, middle or last color, when it is not a gradient |
 | | Text size | 100 | 80 to 150 % |
 | | Window tint, Opacity | 0, 96 | |
 | Motion | Opening effect | Zoom | Fade, Zoom, Slide, Rise, Pop, Drop, Unfold or None |

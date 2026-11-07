@@ -11,7 +11,7 @@ Item {
     readonly property var ui: sw.ui
 
     readonly property real gap: Math.max(Math.round(ui.px(sw.cfg.tileGap) * k), Math.round(4 * k))
-    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(11) * 1.9) : 0
+    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.titleFs * 1.9) : 0
     readonly property real headH: Math.round(ui.fs(11) * 2 * Math.max(0.6, k))
 
     // one column per workspace, also in "recent" order (most recent on top)

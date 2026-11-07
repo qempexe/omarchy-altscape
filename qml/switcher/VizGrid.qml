@@ -10,7 +10,7 @@ Flickable {
 
     readonly property real gap: Math.round(ui.px(sw.cfg.tileGap) * k)
     readonly property real cardW: Math.max(90, Math.round(sw.cfg.tileSize * k))
-    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(11) * 1.9) : 0
+    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.titleFs * 1.9) : 0
     readonly property real cardH: Math.round(cardW * 0.62) + titleH
     readonly property int cols: Math.max(1, Math.floor((width + gap) / (cardW + gap)))
 
@@ -24,8 +24,28 @@ Flickable {
         return out
     }
 
-    // up/down jumps a row only with one section, rows don't line up across sections
-    Binding { target: view.sw; property: "navCols"; value: view.sections.length === 1 ? view.cols : 1 }
+    // the rows as they are on screen, so up/down goes to the window right above or below
+    // the selected one, also across workspace blocks. a row that is short is centered
+    // (a block of fewer windows than columns), the last row of a longer block sits left
+    readonly property var navRows: {
+        const out = []
+        const step = cardW + gap
+        const secs = sections
+        for (let s = 0; s < secs.length; s++) {
+            const count = secs[s].count
+            const perRow = Math.max(1, Math.min(cols, count))
+            const flowW = Math.min(blockW, count * step - gap)
+            const left = (blockW - flowW) / 2
+            for (let r = 0; r * perRow < count; r++) {
+                const row = []
+                for (let c = 0; c < perRow && r * perRow + c < count; c++)
+                    row.push({ i: secs[s].start + r * perRow + c, x: left + c * step + cardW / 2 })
+                out.push(row)
+            }
+        }
+        return out
+    }
+    Binding { target: view.sw; property: "navRows"; value: view.navRows }
 
     contentWidth: width
     contentHeight: col.y + col.implicitHeight

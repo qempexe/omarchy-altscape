@@ -9,7 +9,7 @@ Flickable {
     readonly property var ui: sw.ui
 
     readonly property real gap: Math.round(ui.px(sw.cfg.tileGap) * k)
-    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(11) * 1.9) : 0
+    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.titleFs * 1.9) : 0
     readonly property real headH: 0
     // as big as the setting allows but never taller than we have,
     // and shrunk so everything fits before it has to scroll

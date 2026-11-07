@@ -21,7 +21,7 @@ Item {
     readonly property var ui: sw ? sw.ui : null
     readonly property bool isSelected: sw !== null && sw.selected === itemIndex
     readonly property bool wantsAttention: item !== null && item.urgent === true && sw && sw.cfg.attention !== "off"
-    readonly property real titleH: showTitle ? Math.round(ui.fs(11) * 1.9) : 0
+    readonly property real titleH: showTitle ? Math.round(ui.titleFs * 1.9) : 0
 
     // accent, or the app's own color in by category
     readonly property color tone: ui.appColor(item ? item.cls : "")
@@ -209,7 +209,7 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
         text: card.item ? card.item.title : ""
-        font.pixelSize: ui.fs(11)
+        font.pixelSize: ui.titleFs
         font.weight: card.isSelected ? Font.DemiBold : Font.Normal
         opacity: card.isSelected ? 1 : 0.7
         style: Text.Outline

@@ -13,7 +13,7 @@ Item {
     readonly property int n: sw.items.length
     readonly property real gap: Math.round(ui.px(sw.cfg.tileGap) * k)
     readonly property real pad: Math.max(Math.round(ui.px(12) * k), gap)
-    readonly property real titleH: Math.round(ui.fs(12) * 2.2)
+    readonly property real titleH: Math.round(ui.fs(ui.titleSize + 1) * 2.2)
     readonly property real roomW: Math.max(120, width * 0.94 - pad * 2)
     readonly property real roomH: Math.max(90, height * 0.9 - pad * 2 - titleH)
 
@@ -47,8 +47,6 @@ Item {
         visible: view.n > 0
         radius: ui.r(3)
         color: Qt.rgba(ui.surface.r, ui.surface.g, ui.surface.b, Math.max(0.6, ui.opacityF))
-        border.width: 1
-        border.color: ui.frameOn ? ui.accent : ui.tint(0.14)
 
         Flickable {
             id: flick
@@ -90,6 +88,12 @@ Item {
             }
         }
 
+        Edge {
+            anchors.fill: parent
+            ui: view.ui
+            radius: panel.radius
+        }
+
         // the selected window's title and app
         Txt {
             ui: view.ui
@@ -102,7 +106,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             elide: Text.ElideRight
-            font.pixelSize: ui.fs(12)
+            font.pixelSize: ui.fs(ui.titleSize + 1)
             font.weight: Font.DemiBold
             text: view.current ? (view.current.title || view.current.cls || "") : ""
         }

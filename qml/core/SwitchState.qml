@@ -13,6 +13,9 @@ Item {
     property bool active: false          // drawn on screen right now (live previews run)
     property string mode: cfg.mode
     property int navCols: 1              // set by the visualiser: how far Up/Down moves
+    // or, for a layout in rows of different lengths (a grid with a block per workspace):
+    // its rows on screen, [[{ i, x }, ...], ...], so Up/Down lands right above/below
+    property var navRows: []
     // carousel/ring/stack move the selection to a fixed spot, so hover-select
     // would slide windows out from under the mouse. they turn this off
     property bool hoverSelects: true
@@ -100,6 +103,14 @@ Item {
 
     function stepRow(d) {
         if (items.length === 0) return
+        if (navRows.length > 0) {
+            const t = Model.rowTarget(navRows, selected, d)
+            if (t < 0 || t >= items.length) return
+            pointed = false
+            selected = t
+            userMoved = true
+            return
+        }
         const n = Math.max(1, navCols)
         if (n === 1) { step(d); return }
         const t = selected + d * n
@@ -134,5 +145,5 @@ Item {
         function onWindowsUpdated() { if (root.active) root.refreshKeeping(root.startWhere) }
     }
 
-    onModeChanged: { navCols = 1; hoverSelects = true }
+    onModeChanged: { navCols = 1; navRows = []; hoverSelects = true }
 }

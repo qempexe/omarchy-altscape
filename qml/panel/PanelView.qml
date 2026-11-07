@@ -30,13 +30,10 @@ Item {
         visible: ui.tintPct > 0
         color: ui.accentTint(ui.tintPct / 100)
     }
-    Rectangle {   // edge: a plain neutral line; accent only if "Window outline" is on
+    Edge {        // edge: a plain neutral line; with "Window outline" on, a color or the border's gradient
         anchors.fill: parent
+        ui: view.ui
         radius: ui.r(3)
-        color: "transparent"
-        border.width: 1
-        border.color: ui.frameOn ? ui.accent : ui.tint(0.14)
-        opacity: ui.frameOn ? 0.8 : 1
     }
 
     ColumnLayout {

@@ -12,7 +12,7 @@ Item {
 
     readonly property int n: sw.items.length
     readonly property real gap: Math.max(Math.round(ui.px(sw.cfg.tileGap) * k), Math.round(16 * k))
-    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(11) * 1.9) : 0
+    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.titleFs * 1.9) : 0
     readonly property real roomW: width * 0.96
     readonly property real roomH: height * 0.92
 

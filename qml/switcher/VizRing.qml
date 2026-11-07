@@ -10,7 +10,7 @@ Item {
 
     readonly property int n: sw.items.length
     readonly property real side: Math.min(width, height)
-    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(10) * 1.8) : 0
+    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(ui.titleSize - 1) * 1.8) : 0
     // smaller cards as the ring fills up so they don't overlap
     readonly property real cardW: Math.max(64, Math.min(Math.round(sw.cfg.tileSize * 0.7 * k),
                                                         side * 0.28,

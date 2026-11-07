@@ -240,3 +240,22 @@ function spread(ars, w, h, gap, maxH) {
   }
   return { rowH: rh, boxes: boxes };
 }
+
+// Up/Down through a layout drawn in rows. `rows` is what the layout reports: one array
+// per row on screen, top to bottom, each cell { i: window index, x: its center }.
+// Returns the window one row up (d = -1) or down (d = 1) that sits closest to the
+// selected one sideways, or -1 when there is no row there.
+function rowTarget(rows, selected, d) {
+    if (!rows || rows.length === 0) return -1;
+    let r = -1, x = 0;
+    for (let a = 0; a < rows.length && r < 0; a++)
+        for (let b = 0; b < rows[a].length; b++)
+            if (rows[a][b].i === selected) { r = a; x = rows[a][b].x; break; }
+    if (r < 0) return -1;
+    const t = r + (d < 0 ? -1 : 1);
+    if (t < 0 || t >= rows.length || rows[t].length === 0) return -1;
+    let best = rows[t][0];
+    for (let c = 1; c < rows[t].length; c++)
+        if (Math.abs(rows[t][c].x - x) < Math.abs(best.x - x)) best = rows[t][c];
+    return best.i;
+}

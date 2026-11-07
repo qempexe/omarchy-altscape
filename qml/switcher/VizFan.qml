@@ -10,7 +10,7 @@ Item {
     readonly property var ui: sw.ui
 
     readonly property int n: sw.items.length
-    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.fs(11) * 1.9) : 0
+    readonly property real titleH: sw.cfg.showTitles ? Math.round(ui.titleFs * 1.9) : 0
     // degrees between two cards, narrower as the hand fills up
     readonly property real step: n <= 1 ? 0 : Math.min(14, 110 / (n - 1))
     // half the hand's angle, and how far the cards sit from the point they turn around
