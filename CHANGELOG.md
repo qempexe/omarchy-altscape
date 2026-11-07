@@ -4,6 +4,21 @@ All notable changes to Altscape. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-11-07
+
+### Added
+
+- **Window title size** (8 to 28), in Settings › Previews: the size of the title under
+  each preview, and of the selected title in Compact. It still follows Text size (#11).
+- **Outline gradient** and **Outline color**, in Settings › Look, with Window outline on:
+  the edge of the panel (and of the Compact layout's panel) runs through your theme's
+  window border gradient at its angle, or takes one color of it, or the accent.
+
+### Fixed
+
+- In the grid, Up and Down now move to the window above and below the selected one,
+  also with a block per workspace, instead of stepping to the next window along (#12).
+
 ## [1.1.1] - 2026-11-05
 
 ### Fixed
@@ -86,6 +101,7 @@ All notable changes to Altscape. The format follows
   colors that follow the theme.
 - A bar panel to pick the layout and tune every setting, and a managed Alt+Tab bind.
 
+[1.2.0]: https://github.com/qempexe/omarchy-altscape/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/qempexe/omarchy-altscape/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/qempexe/omarchy-altscape/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/qempexe/omarchy-altscape/compare/v1.0.1...v1.0.2
