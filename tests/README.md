@@ -60,3 +60,9 @@ Test releasing Tab first and releasing the modifier first, with closing effects
 enabled. The live shortcut fixture records the selected address without focusing
 an application, so it cannot detect a focus request rejected while the overlay
 still holds its keyboard grab.
+
+The minimized-window model tests cover origin tags, workspace and monitor scopes,
+removed origin workspaces, older minimizers without tags, malformed tags, and
+scratchpad exclusion. To verify restoration live, minimize a disposable window
+on a floating workspace, select it in Altscape with Scratchpads disabled, and
+check that it returns to its original workspace with keyboard focus and is raised.

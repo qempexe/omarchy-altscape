@@ -334,6 +334,19 @@ Item {
 
     function focusWindow(address) {
         if (!validAddress(address)) return false
+        const key = Model.norm(address)
+        const window = info.windows.find(function(w) { return w.key === key })
+        if (window && window.minimized) {
+            // Move before requesting focus; retries must never focus the hidden
+            // special workspace. The model retains the original workspace.
+            const workspace = Number(window.ws)
+            if (!Number.isSafeInteger(workspace) || workspace < 1) return false
+            if (hyprFormat === "conf")
+                Hyprland.dispatch("movetoworkspacesilent " + workspace + ",address:" + address)
+            else
+                Hyprland.dispatch('hl.dsp.window.move({ workspace = "' + workspace
+                    + '", follow = false, window = "address:' + address + '" })')
+        }
         focusRequest.request("0x" + Model.norm(address))
         return true
     }
