@@ -267,3 +267,11 @@ Omarchy's normal Alt+Tab comes back. You can delete the block later.
 
 Altscape is an independent community plugin. It is not affiliated with or endorsed by
 Omarchy or Hyprland.
+
+### Minimized windows on Omarchy
+
+Windows minimized to Omarchy's `special:minimized` workspace are included in the
+switcher even with Scratchpads disabled. They belong to the workspace recorded
+by the `omarchy-minimized-from-N` tag and are restored there before focusing and
+raising them. Scope filters use that original workspace and its monitor. If an
+older minimizer did not record an origin, the focused workspace is used instead.

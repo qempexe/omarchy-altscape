@@ -48,9 +48,25 @@ function parseSnapshot(snap) {
   for (let k = 0; k < clients.length; k++) {
     const c = clients[k];
     if (!c || c.mapped === false || !c.address) continue;
-    const ws = c.workspace || { id: 0, name: "" };
+    let ws = c.workspace || { id: 0, name: "" };
+    const minimized = ws.name === "special:minimized";
+    if (minimized) {
+      const tags = Array.isArray(c.tags) ? c.tags : [];
+      let origin = 0;
+      for (const tag of tags) {
+        const match = /^omarchy-minimized-from-([1-9][0-9]*)$/.exec(String(tag));
+        if (match && Number.isSafeInteger(Number(match[1]))) origin = Number(match[1]);
+      }
+      // Older minimizers have no origin tag: restore on the focused workspace.
+      if (!origin && focusedMon && focusedMon.activeWorkspace)
+        origin = Number(focusedMon.activeWorkspace.id);
+      if (!(origin > 0)) continue;
+      ws = wsInfo[origin] || { id: origin, name: String(origin) };
+    }
     if (Number(ws.id) === 0 && String(ws.name || "") === "") continue;   // not on any workspace yet
-    const mon = monById[c.monitor] || focusedMon || { x: 0, y: 0, width: 1920, height: 1080, scale: 1, transform: 0, name: "" };
+    const originMonitor = minimized && ws.monitor
+      ? mons.find(function(m) { return m.name === ws.monitor; }) : null;
+    const mon = originMonitor || monById[c.monitor] || focusedMon || { x: 0, y: 0, width: 1920, height: 1080, scale: 1, transform: 0, name: "" };
     const box = monitorBox(mon);
     const at = Array.isArray(c.at) ? c.at : [0, 0];
     const size = Array.isArray(c.size) ? c.size : [box.w, box.h];
@@ -64,6 +80,7 @@ function parseSnapshot(snap) {
       wsName: String(ws.name || ""),
       wsLabel: wsLabel(ws.id, ws.name),
       special: isSpecial(ws),
+      minimized: minimized,
       monitor: String(mon.name || ""),
       focusId: Number(c.focusHistoryID) >= 0 ? Number(c.focusHistoryID) : 999,
       floating: c.floating === true,
